@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>712</width>
+    <height>428</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>HexConverter</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout" stretch="4,1">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_left" stretch="0,1">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_import">
+        <item>
+         <widget class="QLineEdit" name="lineEdit_import">
+          <property name="statusTip">
+           <string>输入文件的路径</string>
+          </property>
+          <property name="placeholderText">
+           <string>输入文件的路径</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_import">
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="statusTip">
+           <string>单击以打开文件选择对话框</string>
+          </property>
+          <property name="text">
+           <string>…</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QTextEdit" name="textEdit_console">
+        <property name="statusTip">
+         <string>输出控制台</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_right" stretch="1,7,1,1">
+      <item>
+       <widget class="QLabel" name="label_logo">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>120</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap resource="resource/resource.qrc">:/img/CP icon.png</pixmap>
+        </property>
+        <property name="scaledContents">
+         <bool>false</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="checkBox_addCrc">
+          <property name="statusTip">
+           <string>是否在文件末尾加上CRC校验值</string>
+          </property>
+          <property name="text">
+           <string>添加CRC</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="comboBox_crcType">
+          <property name="statusTip">
+           <string>选择CRC算法类型</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>自定义</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>CRC-16/CCITT-FALSE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>CRC32 0xEDB88320</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_crcWidth">
+          <property name="text">
+           <string>位宽</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="lineEdit_crcWidth">
+          <property name="statusTip">
+           <string>CRC校验值的位宽，请填写十进制数</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_poly">
+          <property name="text">
+           <string>多项式(0x)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="lineEdit_poly">
+          <property name="statusTip">
+           <string>CRC算法多项式，请填写十六进制数（不用加0x）</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_init">
+          <property name="text">
+           <string>初始值(0x)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="lineEdit_init">
+          <property name="statusTip">
+           <string>CRC算法初始值，请填写十六进制数（不用加0x）</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_refin">
+          <property name="text">
+           <string>输入逆向</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QComboBox" name="comboBox_refin">
+          <property name="statusTip">
+           <string>CRC算法输入逆向标志</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>true</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>false</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_refout">
+          <property name="text">
+           <string>输出逆向</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QComboBox" name="comboBox_refout">
+          <property name="statusTip">
+           <string>CRC算法输出逆向标志</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>true</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>false</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="label_xorout">
+          <property name="text">
+           <string>输出异或值(0x)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QLineEdit" name="lineEdit_xorout">
+          <property name="statusTip">
+           <string>CRC算法输出异或值，请填写十六进制数（不用加0x）</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_padding">
+        <item>
+         <widget class="QCheckBox" name="checkBox_padding">
+          <property name="statusTip">
+           <string>是否将不连续的段填充为连续的段</string>
+          </property>
+          <property name="text">
+           <string>填充</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_padding">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_padding">
+          <property name="text">
+           <string>填充值(0x)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit_padding">
+          <property name="maximumSize">
+           <size>
+            <width>75</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="statusTip">
+           <string>用于填充不连续段的值，请填写十六进制数（不用加0x）</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_export">
+        <item>
+         <widget class="QLabel" name="label_extension">
+          <property name="text">
+           <string>导出格式</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboBox_extension">
+          <property name="statusTip">
+           <string>请选择需要导出的文件格式</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>.hex</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>.bin</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>.s19</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_export">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_export">
+          <property name="statusTip">
+           <string>导出文件</string>
+          </property>
+          <property name="text">
+           <string>导出</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>712</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_file">
+    <property name="title">
+     <string>文件(&amp;F)</string>
+    </property>
+    <addaction name="action_import"/>
+    <addaction name="action_export"/>
+    <addaction name="separator"/>
+    <addaction name="action_exit"/>
+   </widget>
+   <widget class="QMenu" name="menu_help">
+    <property name="title">
+     <string>帮助(&amp;H)</string>
+    </property>
+    <addaction name="action_document"/>
+    <addaction name="action_support"/>
+    <addaction name="separator"/>
+    <addaction name="action_about"/>
+   </widget>
+   <addaction name="menu_file"/>
+   <addaction name="menu_help"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="action_exit">
+   <property name="text">
+    <string>退出(&amp;X)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="action_import">
+   <property name="text">
+    <string>导入(&amp;I)</string>
+   </property>
+  </action>
+  <action name="action_export">
+   <property name="text">
+    <string>导出(&amp;E)</string>
+   </property>
+  </action>
+  <action name="action_document">
+   <property name="text">
+    <string>文档(&amp;D)</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
+   </property>
+  </action>
+  <action name="action_support">
+   <property name="text">
+    <string>技术支持(&amp;S)</string>
+   </property>
+  </action>
+  <action name="action_about">
+   <property name="text">
+    <string>关于(&amp;A)</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="resource/resource.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>action_exit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>316</x>
+     <y>174</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>action_import</sender>
+   <signal>triggered()</signal>
+   <receiver>pushButton_import</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>444</x>
+     <y>45</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>action_export</sender>
+   <signal>triggered()</signal>
+   <receiver>pushButton_export</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>663</x>
+     <y>383</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
