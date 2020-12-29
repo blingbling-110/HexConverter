@@ -25,13 +25,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    aboutdialog.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    aboutdialog.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    aboutdialog.ui
 
 RC_ICONS = "CP icon.ico"
 

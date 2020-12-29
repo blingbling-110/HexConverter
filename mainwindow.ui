@@ -173,12 +173,12 @@
           </property>
           <item>
            <property name="text">
-            <string>true</string>
+            <string>false</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>false</string>
+            <string>true</string>
            </property>
           </item>
          </widget>
@@ -197,12 +197,12 @@
           </property>
           <item>
            <property name="text">
-            <string>true</string>
+            <string>false</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>false</string>
+            <string>true</string>
            </property>
           </item>
          </widget>
