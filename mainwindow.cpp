@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //初始化
     check_crc_setting(ui->checkBox_addCrc->isChecked());
     check_padding_setting(ui->checkBox_padding->isChecked());
+    ui->textEdit_console->document()->setMaximumBlockCount(1000);//设置最大显示行数
 
     //输入框限制
     ui->lineEdit_crcWidth->setValidator(new QIntValidator(3, 64, this));
@@ -19,11 +20,28 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->lineEdit_xorout->setValidator(new QRegExpValidator(regHex, this));
     QRegExp regPadding("[a-fA-F0-9]{2}");
     ui->lineEdit_padding->setValidator(new QRegExpValidator(regPadding, this));
+
+    //导出线程
+    ExportWorker *exportWorker = new ExportWorker;
+    exportWorker->moveToThread(&exportThread);
+    connect(&exportThread, &QThread::finished, exportWorker, &QObject::deleteLater);
+//    connect(this, &MainWindow::startExport, exportWorker, &ExportWorker::testWorker);
+    connect(this, &MainWindow::startExport, exportWorker, &ExportWorker::realWorker);
+    connect(exportWorker, &ExportWorker::message, this, &MainWindow::receiveMessage);
+    connect(exportWorker, &ExportWorker::enable, this, &MainWindow::enableExportButton);
+    exportThread.start();
+
+    //初始化控制台刷新定时器
+    QTimer *consoleTimer = new QTimer(this);
+    connect(consoleTimer, SIGNAL(timeout()), this, SLOT(printStr()));
+    consoleTimer->start(10);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    exportThread.quit();
+    exportThread.wait();
 }
 
 void MainWindow::on_pushButton_import_clicked()
@@ -48,7 +66,18 @@ void MainWindow::on_checkBox_padding_stateChanged(int state)
 
 void MainWindow::on_pushButton_export_clicked()
 {
-
+    QString path = ui->lineEdit_import->text();
+    QString startAddress = ui->lineEdit_startAddress->text();
+    if (path == "") {
+        QMessageBox::critical(this, "错误", "请先导入文件");
+        return;
+    }
+    else if (path.endsWith(".bin") && startAddress == "") {
+        QMessageBox::critical(this, "错误", "请输入起始地址");
+        return;
+    }
+    ui->pushButton_export->setDisabled(true);
+    emit startExport(path, startAddress);
 }
 
 void MainWindow::on_action_support_triggered()
@@ -140,3 +169,25 @@ std::map<std::string, unsigned int> crcArgs[] = {
         {"xorout", 0xffffffff}
     }
 };
+
+void MainWindow::receiveMessage(const QString &str)
+{
+    consoleBuffer.push_back(str);
+}
+
+void MainWindow::printStr()
+{
+    if (consoleBuffer.size() != 0) {
+        QString str;
+        foreach (auto s, consoleBuffer) {
+            str += s + "\n";
+        }
+        consoleBuffer.clear();
+        ui->textEdit_console->append(str);
+    }
+}
+
+void MainWindow::enableExportButton()
+{
+    ui->pushButton_export->setEnabled(true);
+}

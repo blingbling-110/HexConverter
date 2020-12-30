@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout" stretch="4,1">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_left" stretch="0,1">
+     <layout class="QVBoxLayout" name="verticalLayout_left" stretch="0,0,1">
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_import">
         <item>
@@ -48,9 +48,36 @@
        </layout>
       </item>
       <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="label_startAddress">
+          <property name="text">
+           <string>起始地址(0x)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit_startAddress">
+          <property name="statusTip">
+           <string>仅当导入.bin文件时有效，请填写十六进制数（不用加0x）</string>
+          </property>
+          <property name="placeholderText">
+           <string>仅当导入.bin文件时有效，请填写十六进制数（不用加0x）</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
        <widget class="QTextEdit" name="textEdit_console">
         <property name="statusTip">
          <string>输出控制台</string>
+        </property>
+        <property name="lineWrapMode">
+         <enum>QTextEdit::NoWrap</enum>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
         </property>
        </widget>
       </item>

@@ -6,6 +6,11 @@
 #include <QUrl>
 #include <QDesktopServices>
 #include "aboutdialog.h"
+#include "exportworker.h"
+#include <QThread>
+#include <vector>
+#include <QTimer>
+#include <QMessageBox>
 
 namespace Ui {
 class MainWindow;
@@ -14,6 +19,7 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    QThread exportThread;
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -36,6 +42,12 @@ private slots:
 
     void on_comboBox_crcType_currentIndexChanged(int index);
 
+    void receiveMessage(const QString &str);
+
+    void printStr();
+
+    void enableExportButton();
+
 private:
     Ui::MainWindow *ui;
     AboutDialog *aboutDialog;
@@ -45,6 +57,13 @@ private:
     void select_crc_setting(int currentIndex);
 
     void check_padding_setting(bool paddingIsChecked);
+
+    std::vector<QString> consoleBuffer;
+
+    QTimer *consoleTimer;
+
+signals:
+    void startExport(const QString &path, const QString &startAddress);
 };
 
 std::map<std::string, unsigned int> crcArgs[];

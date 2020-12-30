@@ -26,11 +26,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    aboutdialog.cpp
+    aboutdialog.cpp \
+    exportworker.cpp \
+    FileModel.cpp \
+    Segment.cpp
 
 HEADERS += \
         mainwindow.h \
-    aboutdialog.h
+    aboutdialog.h \
+    exportworker.h \
+    CrcCalculator.h \
+    FileModel.h \
+    Segment.h
 
 FORMS += \
         mainwindow.ui \
