@@ -12,6 +12,9 @@
 #include <QTimer>
 #include <QMessageBox>
 
+#define CONSOLE_MAX_LINE 2020
+#define CONSOLE_FLASH_TIME 10
+
 namespace Ui {
 class MainWindow;
 }
@@ -59,6 +62,8 @@ private:
     void check_padding_setting(bool paddingIsChecked);
 
     std::vector<QString> consoleBuffer;
+
+    unsigned int bufferIndex;
 
     QTimer *consoleTimer;
 

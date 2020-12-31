@@ -3,10 +3,14 @@
 
 #include <QObject>
 #include <QThread>
+#include "FileModel.h"
 
 class ExportWorker : public QObject
 {
     Q_OBJECT
+
+    void printSegment(Segment segment);
+
 public:
     explicit ExportWorker(QObject *parent = nullptr);
 

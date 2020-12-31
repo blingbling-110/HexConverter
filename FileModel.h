@@ -7,7 +7,7 @@
 
 using namespace std;
 
-#define READ_BIN_EACH_TIME 1024
+#define READ_EACH_TIME 1024
 
 class FileModel
 {

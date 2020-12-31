@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //初始化
     check_crc_setting(ui->checkBox_addCrc->isChecked());
     check_padding_setting(ui->checkBox_padding->isChecked());
-    ui->textEdit_console->document()->setMaximumBlockCount(1000);//设置最大显示行数
+    ui->textEdit_console->document()->setMaximumBlockCount(CONSOLE_MAX_LINE);//设置最大显示行数
 
     //输入框限制
     ui->lineEdit_crcWidth->setValidator(new QIntValidator(3, 64, this));
@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->lineEdit_poly->setValidator(new QRegExpValidator(regHex, this));
     ui->lineEdit_init->setValidator(new QRegExpValidator(regHex, this));
     ui->lineEdit_xorout->setValidator(new QRegExpValidator(regHex, this));
+    ui->lineEdit_startAddress->setValidator(new QRegExpValidator(regHex, this));
     QRegExp regPadding("[a-fA-F0-9]{2}");
     ui->lineEdit_padding->setValidator(new QRegExpValidator(regPadding, this));
 
@@ -32,9 +33,10 @@ MainWindow::MainWindow(QWidget *parent) :
     exportThread.start();
 
     //初始化控制台刷新定时器
+    bufferIndex = 0;
     QTimer *consoleTimer = new QTimer(this);
     connect(consoleTimer, SIGNAL(timeout()), this, SLOT(printStr()));
-    consoleTimer->start(10);
+    consoleTimer->start(CONSOLE_FLASH_TIME);
 }
 
 MainWindow::~MainWindow()
@@ -177,13 +179,22 @@ void MainWindow::receiveMessage(const QString &str)
 
 void MainWindow::printStr()
 {
-    if (consoleBuffer.size() != 0) {
+    if (bufferIndex != consoleBuffer.size()) {
         QString str;
-        foreach (auto s, consoleBuffer) {
-            str += s + "\n";
+        for (; bufferIndex < consoleBuffer.size(); ++bufferIndex) {
+            if (bufferIndex != consoleBuffer.size() - 1) {
+                str += consoleBuffer[bufferIndex] + "\n";
+            }else {
+                str += consoleBuffer[bufferIndex];
+            }
         }
-        consoleBuffer.clear();
         ui->textEdit_console->append(str);
+
+        //清空缓冲
+        if (consoleBuffer.size() > CONSOLE_MAX_LINE) {
+            consoleBuffer.clear();
+            bufferIndex = 0;
+        }
     }
 }
 

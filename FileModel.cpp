@@ -9,9 +9,9 @@ void FileModel::parseBin(const char * path, size_t startAddress)
 {
     ifstream ifs(path, ios::in | ios::binary);
     Segment temp;
-    char buffer[READ_BIN_EACH_TIME];
+    char buffer[READ_EACH_TIME];
     while (!ifs.eof()) {
-        ifs.read(buffer, READ_BIN_EACH_TIME);
+        ifs.read(buffer, READ_EACH_TIME);
         temp.append(reinterpret_cast<unsigned char*>(buffer), ifs.gcount());
     }
     temp.setStartAddress(startAddress);
