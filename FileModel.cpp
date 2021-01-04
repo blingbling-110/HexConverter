@@ -42,7 +42,7 @@ void FileModel::generateBin(const char* path, const bool padding, unsigned char 
                 ofs.close();
             }else if (this->segments.size() > 1) {
                 char outputPath[256];
-                sprintf(outputPath, "%zX.bin", segment.getStartAddress());
+                sprintf_s(outputPath, "%zX.bin", segment.getStartAddress());
                 ofstream ofs(outputPath, ios::out | ios::binary);
                 ofs.write(reinterpret_cast<char*>(segment.getFrontPointer()), segment.getLength());
                 ofs.close();
