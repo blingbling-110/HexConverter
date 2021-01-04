@@ -51,6 +51,8 @@ private slots:
 
     void enableExportButton();
 
+    void on_pushButton_clear_clicked();
+
 private:
     Ui::MainWindow *ui;
     AboutDialog *aboutDialog;
@@ -68,7 +70,12 @@ private:
     QTimer *consoleTimer;
 
 signals:
-    void startExport(const QString &path, const QString &startAddress);
+    void startExport(
+            const QString &importPath,
+            const QString &startAddress,
+            const QString &exportPath,
+            const bool padding,
+            const QString paddingValue);
 };
 
 std::map<std::string, unsigned int> crcArgs[];

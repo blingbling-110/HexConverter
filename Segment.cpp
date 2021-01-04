@@ -18,6 +18,11 @@ void Segment::append(unsigned char* buffer, size_t length)
     }
 }
 
+void Segment::append(unsigned char oneByte)
+{
+    this->data.push_back(oneByte);
+}
+
 size_t Segment::getLength()
 {
 	return this->data.size();

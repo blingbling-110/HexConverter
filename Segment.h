@@ -36,6 +36,11 @@ public:
     /// <param name="buffer">待写入的缓冲</param>
     /// <param name="length">待写入缓冲的大小</param>
     void append(unsigned char* buffer, size_t length);
+    /// <summary>
+    /// 将单个字节写入段中
+    /// </summary>
+    /// <param name="oneByte">待写入的单个字节</param>
+    void append(unsigned char oneByte);
 	/// <summary>
 	/// 获取段中数据长度
 	/// </summary>

@@ -4,6 +4,7 @@
 #include "Segment.h"
 #include <fstream>
 #include <ios>
+#include <string>
 
 using namespace std;
 
@@ -28,4 +29,16 @@ public:
 	/// <param name="path">bin文件路径</param>
     /// <param name="startAddress">起始地址</param>
     void parseBin(const char* path, size_t startAddress);
+    /// <summary>
+    /// 生成bin文件
+    /// </summary>
+    /// <param name="path">bin文件路径</param>
+    /// <param name="padding">是否填充</param>
+    /// <param name="paddingValue">填充值</param>
+    void generateBin(const char* path, const bool padding, unsigned char paddingValue);
+    /// <summary>
+    /// 解析hex文件
+    /// </summary>
+    /// <param name="path">hex文件路径</param>
+    void parseHex(const char* path);
 };

@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/img">
         <file>CP icon.png</file>
+        <file>start.png</file>
+        <file>log.png</file>
     </qresource>
 </RCC>

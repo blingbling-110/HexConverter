@@ -68,18 +68,30 @@ void MainWindow::on_checkBox_padding_stateChanged(int state)
 
 void MainWindow::on_pushButton_export_clicked()
 {
-    QString path = ui->lineEdit_import->text();
+    QString importPath = ui->lineEdit_import->text();
     QString startAddress = ui->lineEdit_startAddress->text();
-    if (path == "") {
+    const bool padding = ui->checkBox_padding->isChecked();
+    QString paddingValue = ui->lineEdit_padding->text();
+    if (importPath == "") {
         QMessageBox::critical(this, "错误", "请先导入文件");
         return;
     }
-    else if (path.endsWith(".bin") && startAddress == "") {
+    else if (importPath.endsWith(".bin") && startAddress == "") {
         QMessageBox::critical(this, "错误", "请输入起始地址");
         return;
     }
     ui->pushButton_export->setDisabled(true);
-    emit startExport(path, startAddress);
+    QString exportPath = QFileDialog::getSaveFileName(
+                this,
+                "导出文件",
+                "output",
+                "hex文件(*.hex);;s19文件(*.s19);;bin文件(*.bin)");
+    emit startExport(
+                importPath,
+                startAddress,
+                exportPath,
+                padding,
+                paddingValue);
 }
 
 void MainWindow::on_action_support_triggered()
@@ -201,4 +213,9 @@ void MainWindow::printStr()
 void MainWindow::enableExportButton()
 {
     ui->pushButton_export->setEnabled(true);
+}
+
+void MainWindow::on_pushButton_clear_clicked()
+{
+    ui->textEdit_console->clear();
 }

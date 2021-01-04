@@ -9,7 +9,7 @@ class ExportWorker : public QObject
 {
     Q_OBJECT
 
-    void printSegment(Segment segment);
+    void printFile(FileModel* file);
 
 public:
     explicit ExportWorker(QObject *parent = nullptr);
@@ -20,7 +20,12 @@ signals:
 
 public slots:
     void testWorker();
-    void realWorker(const QString &path, const QString &startAddress);
+    void realWorker(
+            const QString &importPath,
+            const QString &startAddress,
+            const QString &exportPath,
+            const bool padding,
+            const QString paddingValue);
 };
 
 #endif // EXPORTWORKER_H

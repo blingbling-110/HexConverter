@@ -84,7 +84,7 @@
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_right" stretch="1,7,1,1">
+     <layout class="QVBoxLayout" name="verticalLayout_right" stretch="1,7,1,0">
       <item>
        <widget class="QLabel" name="label_logo">
         <property name="maximumSize">
@@ -303,32 +303,29 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_export">
         <item>
-         <widget class="QLabel" name="label_extension">
-          <property name="text">
-           <string>导出格式</string>
+         <widget class="QPushButton" name="pushButton_clear">
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>50</height>
+           </size>
           </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="comboBox_extension">
           <property name="statusTip">
-           <string>请选择需要导出的文件格式</string>
+           <string>清空输出控制台</string>
           </property>
-          <item>
-           <property name="text">
-            <string>.hex</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>.bin</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>.s19</string>
-           </property>
-          </item>
+          <property name="text">
+           <string>清空</string>
+          </property>
+          <property name="icon">
+           <iconset resource="resource/resource.qrc">
+            <normaloff>:/img/log.png</normaloff>:/img/log.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
          </widget>
         </item>
         <item>
@@ -346,11 +343,27 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButton_export">
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>50</height>
+           </size>
+          </property>
           <property name="statusTip">
            <string>导出文件</string>
           </property>
           <property name="text">
            <string>导出</string>
+          </property>
+          <property name="icon">
+           <iconset resource="resource/resource.qrc">
+            <normaloff>:/img/start.png</normaloff>:/img/start.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
           </property>
          </widget>
         </item>
