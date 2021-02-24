@@ -22,10 +22,10 @@
         <item>
          <widget class="QLineEdit" name="lineEdit_import">
           <property name="statusTip">
-           <string>输入文件的路径</string>
+           <string>导入文件的路径</string>
           </property>
           <property name="placeholderText">
-           <string>输入文件的路径</string>
+           <string>导入文件的路径</string>
           </property>
          </widget>
         </item>
@@ -45,10 +45,20 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_openFolder">
+          <property name="statusTip">
+           <string>打开导入文件所在的目录</string>
+          </property>
+          <property name="text">
+           <string>打开目录</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QHBoxLayout" name="horizontalLayout_startAddress">
         <item>
          <widget class="QLabel" name="label_startAddress">
           <property name="text">
@@ -84,7 +94,7 @@
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_right" stretch="1,7,1,0">
+     <layout class="QVBoxLayout" name="verticalLayout_right" stretch="1,7,1,0,0">
       <item>
        <widget class="QLabel" name="label_logo">
         <property name="maximumSize">
@@ -108,7 +118,7 @@
        </widget>
       </item>
       <item>
-       <layout class="QGridLayout" name="gridLayout">
+       <layout class="QGridLayout" name="gridLayout_crc">
         <item row="0" column="0">
          <widget class="QCheckBox" name="checkBox_addCrc">
           <property name="statusTip">
@@ -258,7 +268,7 @@
         <item>
          <widget class="QCheckBox" name="checkBox_padding">
           <property name="statusTip">
-           <string>是否将不连续的段填充为连续的段</string>
+           <string>是否将不连续的段填充为连续的段，仅在导出.bin文件时生效</string>
           </property>
           <property name="text">
            <string>填充</string>
@@ -297,6 +307,46 @@
            <string>用于填充不连续段的值，请填写十六进制数（不用加0x）</string>
           </property>
          </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_print">
+        <item>
+         <spacer name="horizontalSpacer_printLeft">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_print">
+          <property name="statusTip">
+           <string>在控制台中打印出导入文件中所包含的段，包括起始地址和数据</string>
+          </property>
+          <property name="text">
+           <string>打印导入文件</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_printRight">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </item>

@@ -41,4 +41,9 @@ public:
     /// </summary>
     /// <param name="path">hex文件路径</param>
     void parseHex(const char* path);
+    /// <summary>
+    /// 生成hex文件
+    /// </summary>
+    /// <param name="path">hex文件路径</param>
+    void generateHex(const char* path);
 };

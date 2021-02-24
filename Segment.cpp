@@ -63,3 +63,10 @@ unsigned long long Segment::getSegmentCrc()
 {
 	return this->crc;
 }
+
+void Segment::clear()
+{
+    this->startAddr = 0;
+    this->data.clear();
+    this->data.shrink_to_fit();
+}

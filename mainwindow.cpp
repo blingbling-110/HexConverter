@@ -72,6 +72,8 @@ void MainWindow::on_pushButton_export_clicked()
     QString startAddress = ui->lineEdit_startAddress->text();
     const bool padding = ui->checkBox_padding->isChecked();
     QString paddingValue = ui->lineEdit_padding->text();
+    const bool print = ui->checkBox_print->isChecked();
+
     if (importPath == "") {
         QMessageBox::critical(this, "错误", "请先导入文件");
         return;
@@ -91,7 +93,8 @@ void MainWindow::on_pushButton_export_clicked()
                 startAddress,
                 exportPath,
                 padding,
-                paddingValue);
+                paddingValue,
+                print);
 }
 
 void MainWindow::on_action_support_triggered()
@@ -218,4 +221,12 @@ void MainWindow::enableExportButton()
 void MainWindow::on_pushButton_clear_clicked()
 {
     ui->textEdit_console->clear();
+}
+
+void MainWindow::on_pushButton_openFolder_clicked()
+{
+    QString importPath = ui->lineEdit_import->text();
+    if (!importPath.isEmpty()) {
+        QProcess::startDetached("explorer /select," + importPath.replace("/", "\\"));
+    }
 }

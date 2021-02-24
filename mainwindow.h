@@ -11,6 +11,7 @@
 #include <vector>
 #include <QTimer>
 #include <QMessageBox>
+#include <QProcess>
 
 #define CONSOLE_MAX_LINE 2020
 #define CONSOLE_FLASH_TIME 10
@@ -53,6 +54,8 @@ private slots:
 
     void on_pushButton_clear_clicked();
 
+    void on_pushButton_openFolder_clicked();
+
 private:
     Ui::MainWindow *ui;
     AboutDialog *aboutDialog;
@@ -75,7 +78,8 @@ signals:
             const QString &startAddress,
             const QString &exportPath,
             const bool padding,
-            const QString paddingValue);
+            const QString paddingValue,
+            const bool print);
 };
 
 std::map<std::string, unsigned int> crcArgs[];

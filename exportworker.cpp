@@ -19,22 +19,36 @@ void ExportWorker::realWorker(
         const QString &startAddress,
         const QString &exportPath,
         const bool padding,
-        const QString paddingValue)
+        const QString paddingValue,
+        const bool print)
 {
+    //取消导出
+//    qDebug() << exportPath;
+    if (exportPath.isEmpty()) {
+        emit enable();
+        return;
+    }
+
     FileModel *file = new FileModel;
+    bool ok;
 
     //解析文件
     if (importPath.endsWith(".bin")) {
-        bool ok;
         file->parseBin(importPath.toLocal8Bit().data(), startAddress.toUInt(&ok, 16));
+    }else if (importPath.endsWith(".hex")) {
+        file->parseHex(importPath.toLocal8Bit().data());
     }
-//    this->printFile(file);
+
+    //打印输入文件
+    if (print) {
+        this->printFile(file);
+    }
 
     //导出文件
     if (exportPath.endsWith(".bin")) {
-        file->generateBin(exportPath.toLocal8Bit().data(), padding, *(paddingValue.toLocal8Bit().data()));
+        file->generateBin(exportPath.toLocal8Bit().data(), padding, paddingValue.toUInt(&ok, 16));
     }
-    emit message("已生成：" + exportPath);
+    emit message("转换已完成！");
 
     emit enable();
 }
@@ -50,7 +64,7 @@ void ExportWorker::printFile(FileModel* file)
         QString output;
         while(len-- > 0)
         {
-            if (i++ < 0x1F) {
+            if (i++ < 0x20) {
                 output += QString("%1 ").arg(*pData++, 2, 16, QLatin1Char('0')).toUpper();
                 if (len == 0) {
                     emit message(output);
@@ -59,7 +73,7 @@ void ExportWorker::printFile(FileModel* file)
                 QThread::usleep(1);
                 emit message(output);
                 output = QString("%1 ").arg(*pData++, 2, 16, QLatin1Char('0')).toUpper();
-                i = 0;
+                i = 1;
             }
         }
     }

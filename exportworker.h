@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QThread>
+#include <QDebug>
 #include "FileModel.h"
 
 class ExportWorker : public QObject
@@ -25,7 +26,8 @@ public slots:
             const QString &startAddress,
             const QString &exportPath,
             const bool padding,
-            const QString paddingValue);
+            const QString paddingValue,
+            const bool print);
 };
 
 #endif // EXPORTWORKER_H

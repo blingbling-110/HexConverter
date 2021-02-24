@@ -71,5 +71,9 @@ public:
 	/// 获取段的CRC校验值。注意要先调用calculateSegmentCrc进行计算
 	/// </summary>
 	/// <returns>段的CRC校验值</returns>
-	unsigned long long getSegmentCrc();
+    unsigned long long getSegmentCrc();
+    /// <summary>
+    /// 清除段
+    /// </summary>
+    void clear();
 };

@@ -59,12 +59,55 @@ void FileModel::generateBin(const char* path, const bool padding, unsigned char 
 void FileModel::parseHex(const char * path)
 {
     ifstream ifs(path, ios::in);
-    string line;
+    string line, lineAddr, lineData, extLinAddr;
+    int lineDataLen, lineType, lineCheckSum, i;
+    size_t absAddr, lastAbsAddr;
+    Segment temp;
+    lastAbsAddr = 0;
     while (getline(ifs, line)) {
-        Segment temp;
-//        temp.setStartAddress(startAddress);
-//        temp.append(reinterpret_cast<unsigned char*>(buffer), ifs.gcount());
-        this->append(temp);
+//        printf((line + "\n").c_str());
+        lineDataLen = std::strtoul(line.substr(1, 2).c_str(), NULL, 16);
+        lineAddr = line.substr(3, 4);
+        lineType = std::strtoul(line.substr(7, 2).c_str(), NULL, 16);
+        lineData = line.substr(9, lineDataLen * 2);
+        lineCheckSum = std::strtoul(line.substr(9 + lineDataLen * 2, 2).c_str(), NULL, 16);
+//        printf("%d %s %d %s %d\n",
+//               lineDataLen, lineAddr.c_str(), lineType, lineData.c_str(), lineCheckSum);
+
+        switch (lineType) {
+        case 0://数据记录
+            absAddr = std::strtoul((extLinAddr + lineAddr).c_str(), NULL, 16);
+            if (absAddr != lastAbsAddr) {
+//                printf("absAddr:%u lastAbsAddr:%u\n", absAddr, lastAbsAddr);
+                if (lastAbsAddr != 0) {
+                    this->append(temp);
+                }
+                temp.clear();
+                temp.setStartAddress(absAddr);
+            }
+            i = 0;
+            while(i < lineDataLen)
+            {
+                temp.append(static_cast<unsigned char>(std::strtoul(lineData.substr(i * 2, 2).c_str(), NULL, 16)));
+                i++;
+            }
+            lastAbsAddr = absAddr + lineDataLen;
+            break;
+        case 1://文件结束记录
+            this->append(temp);
+            temp.clear();
+            break;
+        case 4://扩展线性地址记录
+            extLinAddr = lineData;
+            break;
+        default:
+            break;
+        }
     }
     ifs.close();
+}
+
+void FileModel::generateHex(const char * path)
+{
+//    for (auto iter = this->segments.begin(); iter != this->segments.end(); ++iter) {
 }
