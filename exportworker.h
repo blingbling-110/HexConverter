@@ -5,6 +5,7 @@
 #include <QThread>
 #include <QDebug>
 #include "FileModel.h"
+#include <QMetaType>
 
 class ExportWorker : public QObject
 {
@@ -22,8 +23,7 @@ signals:
 public slots:
     void testWorker();
     void realWorker(
-            const QString &importPath,
-            const QString &startAddress,
+            const std::vector<std::vector<QString>> importFiles,
             const QString &exportPath,
             const bool padding,
             const QString paddingValue,

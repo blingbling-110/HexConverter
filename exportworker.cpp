@@ -2,7 +2,7 @@
 
 ExportWorker::ExportWorker(QObject *parent) : QObject(parent)
 {
-
+    qRegisterMetaType<std::vector<std::vector<QString>>>("std::vector<std::vector<QString>>");//注册类型
 }
 
 void ExportWorker::testWorker()
@@ -15,8 +15,7 @@ void ExportWorker::testWorker()
 }
 
 void ExportWorker::realWorker(
-        const QString &importPath,
-        const QString &startAddress,
+        const std::vector<std::vector<QString>> importFiles,
         const QString &exportPath,
         const bool padding,
         const QString paddingValue,
@@ -33,10 +32,14 @@ void ExportWorker::realWorker(
     bool ok;
 
     //解析文件
-    if (importPath.endsWith(".bin")) {
-        file->parseBin(importPath.toLocal8Bit().data(), startAddress.toUInt(&ok, 16));
-    }else if (importPath.endsWith(".hex")) {
-        file->parseHex(importPath.toLocal8Bit().data());
+    for (int i = 0; i < importFiles.size(); ++i) {
+        QString startAddress = importFiles[i][0];
+        QString importPath = importFiles[i][1];
+        if (importPath.endsWith(".bin")) {
+            file->parseBin(importPath.toLocal8Bit().data(), startAddress.toUInt(&ok, 16));
+        }else if (importPath.endsWith(".hex")) {
+            file->parseHex(importPath.toLocal8Bit().data());
+        }
     }
 
     //打印输入文件

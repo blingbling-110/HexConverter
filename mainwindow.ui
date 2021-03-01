@@ -6,34 +6,72 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>859</width>
-    <height>474</height>
+    <width>1169</width>
+    <height>483</height>
    </rect>
+  </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
   </property>
   <property name="windowTitle">
    <string>HexConverter</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout" stretch="4,1">
+   <layout class="QHBoxLayout" name="horizontalLayout" stretch="4,4,1">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_left" stretch="0,0,1">
+     <layout class="QVBoxLayout" name="verticalLayout_left">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_import">
+       <widget class="QTableWidget" name="tableWidget_import">
+        <property name="statusTip">
+         <string>导入文件列表</string>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <property name="sortingEnabled">
+         <bool>true</bool>
+        </property>
+        <attribute name="horizontalHeaderStretchLastSection">
+         <bool>true</bool>
+        </attribute>
+        <attribute name="verticalHeaderVisible">
+         <bool>false</bool>
+        </attribute>
+        <column>
+         <property name="text">
+          <string>起始地址（0x）</string>
+         </property>
+         <property name="toolTip">
+          <string>仅当导入.bin文件时有效，请填写十六进制数（不用加0x）</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>文件路径</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_listView">
         <item>
-         <widget class="QLineEdit" name="lineEdit_import">
-          <property name="statusTip">
-           <string>导入文件的路径</string>
+         <spacer name="horizontalSpacer_list1">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
           </property>
-          <property name="placeholderText">
-           <string>导入文件的路径</string>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
           </property>
-         </widget>
+         </spacer>
         </item>
         <item>
          <widget class="QPushButton" name="pushButton_import">
           <property name="maximumSize">
            <size>
-            <width>45</width>
+            <width>16777215</width>
             <height>16777215</height>
            </size>
           </property>
@@ -41,43 +79,98 @@
            <string>单击以打开文件选择对话框</string>
           </property>
           <property name="text">
-           <string>…</string>
+           <string>添加文件</string>
           </property>
          </widget>
         </item>
         <item>
+         <spacer name="horizontalSpacer_list2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_delete">
+          <property name="statusTip">
+           <string>删除列表中的选中项</string>
+          </property>
+          <property name="text">
+           <string>删除所选</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_list3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_clearList">
+          <property name="statusTip">
+           <string>删除列表中的所有项</string>
+          </property>
+          <property name="text">
+           <string>清空列表</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_list4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
          <widget class="QPushButton" name="pushButton_openFolder">
           <property name="statusTip">
-           <string>打开导入文件所在的目录</string>
+           <string>选中列表中的一项，打开其所在的目录</string>
           </property>
           <property name="text">
            <string>打开目录</string>
           </property>
          </widget>
         </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_startAddress">
         <item>
-         <widget class="QLabel" name="label_startAddress">
-          <property name="text">
-           <string>起始地址(0x)</string>
+         <spacer name="horizontalSpacer_list5">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
           </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="lineEdit_startAddress">
-          <property name="statusTip">
-           <string>仅当导入.bin文件时有效，请填写十六进制数（不用加0x）</string>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
           </property>
-          <property name="placeholderText">
-           <string>仅当导入.bin文件时有效，请填写十六进制数（不用加0x）</string>
-          </property>
-         </widget>
+         </spacer>
         </item>
        </layout>
       </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_center" stretch="1">
       <item>
        <widget class="QTextEdit" name="textEdit_console">
         <property name="statusTip">
@@ -353,7 +446,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_export">
         <item>
-         <widget class="QPushButton" name="pushButton_clear">
+         <widget class="QPushButton" name="pushButton_clearConsole">
           <property name="minimumSize">
            <size>
             <width>100</width>
@@ -428,7 +521,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>859</width>
+     <width>1169</width>
      <height>23</height>
     </rect>
    </property>

@@ -12,6 +12,10 @@
 #include <QTimer>
 #include <QMessageBox>
 #include <QProcess>
+#include "readonlydelegate.h"
+#include "validatedelegate.h"
+#include <QDragEnterEvent>
+#include <QMimeData>
 
 #define CONSOLE_MAX_LINE 2020
 #define CONSOLE_FLASH_TIME 10
@@ -52,9 +56,17 @@ private slots:
 
     void enableExportButton();
 
-    void on_pushButton_clear_clicked();
+    void on_pushButton_clearConsole_clicked();
 
     void on_pushButton_openFolder_clicked();
+
+    void on_pushButton_delete_clicked();
+
+    void on_pushButton_clearList_clicked();
+
+    void dragEnterEvent(QDragEnterEvent *event);
+
+    void dropEvent(QDropEvent *event);
 
 private:
     Ui::MainWindow *ui;
@@ -74,8 +86,7 @@ private:
 
 signals:
     void startExport(
-            const QString &importPath,
-            const QString &startAddress,
+            const std::vector<std::vector<QString>> importFiles,
             const QString &exportPath,
             const bool padding,
             const QString paddingValue,

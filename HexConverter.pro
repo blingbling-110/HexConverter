@@ -29,7 +29,9 @@ SOURCES += \
     aboutdialog.cpp \
     exportworker.cpp \
     FileModel.cpp \
-    Segment.cpp
+    Segment.cpp \
+    readonlydelegate.cpp \
+    validatedelegate.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -37,7 +39,9 @@ HEADERS += \
     exportworker.h \
     CrcCalculator.h \
     FileModel.h \
-    Segment.h
+    Segment.h \
+    readonlydelegate.h \
+    validatedelegate.h
 
 FORMS += \
         mainwindow.ui \

@@ -18,9 +18,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->lineEdit_poly->setValidator(new QRegExpValidator(regHex, this));
     ui->lineEdit_init->setValidator(new QRegExpValidator(regHex, this));
     ui->lineEdit_xorout->setValidator(new QRegExpValidator(regHex, this));
-    ui->lineEdit_startAddress->setValidator(new QRegExpValidator(regHex, this));
     QRegExp regPadding("[a-fA-F0-9]{2}");
     ui->lineEdit_padding->setValidator(new QRegExpValidator(regPadding, this));
+
+    //表格设置
+    ReadOnlyDelegate *readOnlyDelegate = new ReadOnlyDelegate(this);
+    ui->tableWidget_import->setItemDelegateForColumn(1, readOnlyDelegate);//设置列只读
+    ValidateDelegate *validateDelegate = new ValidateDelegate(this);
+    ui->tableWidget_import->setItemDelegateForColumn(0, validateDelegate);//设置列的验证器
 
     //导出线程
     ExportWorker *exportWorker = new ExportWorker;
@@ -48,12 +53,20 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_import_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(
-                this,
-                "导入文件",
-                "",
-                "支持的文件\(*.hex *.s19 *.bin)");
-    ui->lineEdit_import->setText(fileName);
+    QFileDialog fileDialog(this);
+    fileDialog.setWindowTitle("导入文件");
+    fileDialog.setNameFilter("All(*.hex *.s19 *.bin);;hex(*.hex);;s19(*.s19);;bin(*.bin)");
+    fileDialog.setFileMode(QFileDialog::ExistingFiles);
+    if (fileDialog.exec() == QDialog::Accepted)//弹出对话框
+    {
+        QStringList importPaths = fileDialog.selectedFiles();
+        foreach (QString importPath, importPaths) {
+            int rowNums = ui->tableWidget_import->rowCount();
+            ui->tableWidget_import->insertRow(rowNums);
+            QTableWidgetItem *cellItem = new QTableWidgetItem(importPath);
+            ui->tableWidget_import->setItem(rowNums, 1, cellItem);
+        }
+    }
 }
 
 void MainWindow::on_checkBox_addCrc_stateChanged(int state)
@@ -68,29 +81,46 @@ void MainWindow::on_checkBox_padding_stateChanged(int state)
 
 void MainWindow::on_pushButton_export_clicked()
 {
-    QString importPath = ui->lineEdit_import->text();
-    QString startAddress = ui->lineEdit_startAddress->text();
+    int rowNum = ui->tableWidget_import->rowCount();
+    if (rowNum < 1) {
+        QMessageBox::critical(this, "错误", QString("请先导入文件"));
+        return;
+    }
+    std::vector<std::vector<QString>> importFiles;
+    for (int i = 0; i < rowNum; ++i) {
+        QTableWidgetItem* startAddressItem = ui->tableWidget_import->item(i, 0);
+        QTableWidgetItem* importPathItem = ui->tableWidget_import->item(i, 1);
+        QString startAddress = "";
+        if (startAddressItem != NULL) {
+            startAddress = startAddressItem->text().trimmed();
+        }
+        QString importPath = importPathItem->text().trimmed();
+        if (importPath == ""
+                || (!importPath.endsWith(".bin")
+                    && !importPath.endsWith(".hex")
+                    && !importPath.endsWith(".s19"))) {
+            QMessageBox::critical(this, "错误", QString("在第%1行导入了非法文件路径").arg(i + 1));
+            return;
+        }
+        else if (importPath.endsWith(".bin") && startAddress == "") {
+            QMessageBox::critical(this, "错误", QString("在第%1行导入了bin文件，请输入起始地址").arg(i + 1));
+            return;
+        }
+        importFiles.push_back({startAddress, importPath});
+    }
+
     const bool padding = ui->checkBox_padding->isChecked();
     QString paddingValue = ui->lineEdit_padding->text();
     const bool print = ui->checkBox_print->isChecked();
 
-    if (importPath == "") {
-        QMessageBox::critical(this, "错误", "请先导入文件");
-        return;
-    }
-    else if (importPath.endsWith(".bin") && startAddress == "") {
-        QMessageBox::critical(this, "错误", "请输入起始地址");
-        return;
-    }
     ui->pushButton_export->setDisabled(true);
     QString exportPath = QFileDialog::getSaveFileName(
                 this,
                 "导出文件",
                 "output",
-                "hex文件(*.hex);;s19文件(*.s19);;bin文件(*.bin)");
+                "hex(*.hex);;s19(*.s19);;bin(*.bin)");
     emit startExport(
-                importPath,
-                startAddress,
+                importFiles,
                 exportPath,
                 padding,
                 paddingValue,
@@ -218,15 +248,54 @@ void MainWindow::enableExportButton()
     ui->pushButton_export->setEnabled(true);
 }
 
-void MainWindow::on_pushButton_clear_clicked()
+void MainWindow::on_pushButton_clearConsole_clicked()
 {
     ui->textEdit_console->clear();
 }
 
 void MainWindow::on_pushButton_openFolder_clicked()
 {
-    QString importPath = ui->lineEdit_import->text();
-    if (!importPath.isEmpty()) {
+    QTableWidgetItem *curItem = ui->tableWidget_import->currentItem();
+    if (curItem != NULL) {
+        QString importPath = curItem->text().trimmed();
         QProcess::startDetached("explorer /select," + importPath.replace("/", "\\"));
+    }
+}
+
+void MainWindow::on_pushButton_delete_clicked()
+{
+    auto selItems = ui->tableWidget_import->selectedItems();
+    for(int i = 0; i < selItems.count(); i++)
+    {
+        int curRow = ui->tableWidget_import->row(selItems.at(i));
+        ui->tableWidget_import->removeRow(curRow);
+    }
+}
+
+void MainWindow::on_pushButton_clearList_clicked()
+{
+    ui->tableWidget_import->setRowCount(0);
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+    event->acceptProposedAction();
+}
+
+void MainWindow::dropEvent(QDropEvent *event)
+{
+    auto urlList = event->mimeData()->urls();
+    for (int i = 0; i < urlList.length(); ++i) {
+        QString importPath = urlList[i].toString().replace("file:///", "");
+        if (importPath == ""
+                || (!importPath.endsWith(".bin")
+                    && !importPath.endsWith(".hex")
+                    && !importPath.endsWith(".s19"))) {
+            continue;
+        }
+        int rowNums = ui->tableWidget_import->rowCount();
+        ui->tableWidget_import->insertRow(rowNums);
+        QTableWidgetItem *cellItem = new QTableWidgetItem(importPath);
+        ui->tableWidget_import->setItem(rowNums, 1, cellItem);
     }
 }
