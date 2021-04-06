@@ -45,5 +45,7 @@ public:
     /// 生成hex文件
     /// </summary>
     /// <param name="path">hex文件路径</param>
-    void generateHex(const char* path);
+    /// <param name="padding">是否填充</param>
+    /// <param name="paddingValue">填充值</param>
+    void generateHex(const char* path, const bool padding, unsigned char paddingValue);
 };

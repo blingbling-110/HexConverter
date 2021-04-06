@@ -41,8 +41,10 @@ void FileModel::generateBin(const char* path, const bool padding, unsigned char 
                 ofs.write(reinterpret_cast<char*>(segment.getFrontPointer()), segment.getLength());
                 ofs.close();
             }else if (this->segments.size() > 1) {
+                string folderPath = path;
+                folderPath = folderPath.substr(0, folderPath.rfind('/'));
                 char outputPath[256];
-                sprintf_s(outputPath, "%zX.bin", segment.getStartAddress());
+                sprintf_s(outputPath, "%s/%zX.bin", folderPath.c_str(), segment.getStartAddress());
                 ofstream ofs(outputPath, ios::out | ios::binary);
                 ofs.write(reinterpret_cast<char*>(segment.getFrontPointer()), segment.getLength());
                 ofs.close();
@@ -107,7 +109,7 @@ void FileModel::parseHex(const char * path)
     ifs.close();
 }
 
-void FileModel::generateHex(const char * path)
+void FileModel::generateHex(const char * path, const bool padding, unsigned char paddingValue)
 {
 //    for (auto iter = this->segments.begin(); iter != this->segments.end(); ++iter) {
 }

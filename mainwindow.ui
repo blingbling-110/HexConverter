@@ -361,7 +361,7 @@
         <item>
          <widget class="QCheckBox" name="checkBox_padding">
           <property name="statusTip">
-           <string>是否将不连续的段填充为连续的段，仅在导出.bin文件时生效</string>
+           <string>是否将不连续的段填充为连续的段</string>
           </property>
           <property name="text">
            <string>填充</string>
@@ -397,7 +397,7 @@
            </size>
           </property>
           <property name="statusTip">
-           <string>用于填充不连续段的值，请填写十六进制数（不用加0x）</string>
+           <string>用于填充不连续段的值，请填写十六进制数（不用加0x），默认填充00</string>
           </property>
          </widget>
         </item>

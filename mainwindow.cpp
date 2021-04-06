@@ -51,6 +51,25 @@ MainWindow::~MainWindow()
     exportThread.wait();
 }
 
+std::map<std::string, unsigned int> crcArgs[] = {
+    {
+        {"width", 16},
+        {"poly", 0x1021},
+        {"init", 0xffff},
+        {"refin", 0},
+        {"refout", 0},
+        {"xorout", 0x0000}
+    },
+    {
+        {"width", 32},
+        {"poly", 0xedb88320},
+        {"init", 0xffffffff},
+        {"refin", 0},
+        {"refout", 0},
+        {"xorout", 0xffffffff}
+    }
+};
+
 void MainWindow::on_pushButton_import_clicked()
 {
     QFileDialog fileDialog(this);
@@ -98,7 +117,10 @@ void MainWindow::on_pushButton_export_clicked()
         if (importPath == ""
                 || (!importPath.endsWith(".bin")
                     && !importPath.endsWith(".hex")
-                    && !importPath.endsWith(".s19"))) {
+                    && !importPath.endsWith(".s19")
+                    && !importPath.endsWith(".BIN")
+                    && !importPath.endsWith(".HEX")
+                    && !importPath.endsWith(".S19"))) {
             QMessageBox::critical(this, "错误", QString("在第%1行导入了非法文件路径").arg(i + 1));
             return;
         }
@@ -198,25 +220,6 @@ void MainWindow::check_padding_setting(bool paddingIsChecked)
     }
 }
 
-std::map<std::string, unsigned int> crcArgs[] = {
-    {
-        {"width", 16},
-        {"poly", 0x1021},
-        {"init", 0xffff},
-        {"refin", 0},
-        {"refout", 0},
-        {"xorout", 0x0000}
-    },
-    {
-        {"width", 32},
-        {"poly", 0xedb88320},
-        {"init", 0xffffffff},
-        {"refin", 0},
-        {"refout", 0},
-        {"xorout", 0xffffffff}
-    }
-};
-
 void MainWindow::receiveMessage(const QString &str)
 {
     consoleBuffer.push_back(str);
@@ -290,7 +293,10 @@ void MainWindow::dropEvent(QDropEvent *event)
         if (importPath == ""
                 || (!importPath.endsWith(".bin")
                     && !importPath.endsWith(".hex")
-                    && !importPath.endsWith(".s19"))) {
+                    && !importPath.endsWith(".s19")
+                    && !importPath.endsWith(".BIN")
+                    && !importPath.endsWith(".HEX")
+                    && !importPath.endsWith(".S19"))) {
             continue;
         }
         int rowNums = ui->tableWidget_import->rowCount();

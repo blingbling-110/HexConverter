@@ -21,8 +21,8 @@ void ExportWorker::realWorker(
         const QString paddingValue,
         const bool print)
 {
-    //取消导出
 //    qDebug() << exportPath;
+    //取消导出
     if (exportPath.isEmpty()) {
         emit enable();
         return;
@@ -35,9 +35,9 @@ void ExportWorker::realWorker(
     for (int i = 0; i < importFiles.size(); ++i) {
         QString startAddress = importFiles[i][0];
         QString importPath = importFiles[i][1];
-        if (importPath.endsWith(".bin")) {
+        if (importPath.endsWith(".bin") || importPath.endsWith(".BIN")) {
             file->parseBin(importPath.toLocal8Bit().data(), startAddress.toUInt(&ok, 16));
-        }else if (importPath.endsWith(".hex")) {
+        }else if (importPath.endsWith(".hex") || importPath.endsWith(".HEX")) {
             file->parseHex(importPath.toLocal8Bit().data());
         }
     }
@@ -48,7 +48,7 @@ void ExportWorker::realWorker(
     }
 
     //导出文件
-    if (exportPath.endsWith(".bin")) {
+    if (exportPath.endsWith(".bin") || exportPath.endsWith(".BIN")) {
         file->generateBin(exportPath.toLocal8Bit().data(), padding, paddingValue.toUInt(&ok, 16));
     }
     emit message("转换已完成！");

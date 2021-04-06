@@ -93,6 +93,4 @@ signals:
             const bool print);
 };
 
-std::map<std::string, unsigned int> crcArgs[];
-
 #endif // MAINWINDOW_H
