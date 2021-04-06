@@ -1,15 +1,87 @@
 #include "FileModel.h"
 
-bool FileModel::append(Segment segment)
+void FileModel::append(Segment segment)
 {
-	return this->segments.insert(std::pair<rsize_t, Segment>(segment.getStartAddress(), segment)).second;
+    size_t startAddr = segment.getStartAddress();
+    size_t endAddr = startAddr + segment.getLength();
+
+    //替换掉重复的段
+    for (auto iter = this->segments.begin(); iter != this->segments.end(); ++iter) {
+        size_t oriStartAddr = iter->first;
+        Segment oriSegment = iter->second;
+        size_t oriEndAddr = oriStartAddr + oriSegment.getLength();
+
+        if (oriStartAddr <= startAddr && oriEndAddr >= endAddr) {
+            //整个新段替换掉旧段
+            oriSegment.replace(startAddr, segment.getLength(), segment.getFrontPointer());
+            segments[oriStartAddr] = oriSegment;
+            return;
+        }else if (oriStartAddr > startAddr && oriStartAddr < endAddr && oriEndAddr >= endAddr) {
+            //新段的下部分替换掉旧段，上部分继续新增
+            oriSegment.replace(oriStartAddr, endAddr - oriStartAddr,
+                               segment.getFrontPointer() + (oriStartAddr - startAddr));
+            segments[oriStartAddr] = oriSegment;
+            segment.remove(oriStartAddr, endAddr - oriStartAddr);
+            this->append(segment);
+            return;
+        }else if (oriEndAddr > startAddr && oriEndAddr < endAddr && oriStartAddr <= startAddr) {
+            //新段的上部分替换掉旧段，下部分继续新增
+            oriSegment.replace(startAddr, oriEndAddr - startAddr, segment.getFrontPointer());
+            segments[oriStartAddr] = oriSegment;
+            segment.remove(startAddr, oriEndAddr - startAddr);
+            segment.setStartAddress(oriEndAddr);
+            this->append(segment);
+            return;
+        }else if (oriStartAddr > startAddr && oriEndAddr < endAddr) {
+            //新段的中间部分替换掉旧段，上下部分继续新增
+            oriSegment.replace(oriStartAddr, oriSegment.getLength(),
+                               segment.getFrontPointer() + (oriStartAddr - startAddr));
+            segments[oriStartAddr] = oriSegment;
+            Segment segmentEnd;
+            segmentEnd.setStartAddress(oriEndAddr);
+            segmentEnd.append(segment.getFrontPointer() + (oriEndAddr - startAddr), endAddr - oriEndAddr);
+            this->append(segmentEnd);
+            segment.remove(oriStartAddr, endAddr - oriStartAddr);
+            this->append(segment);
+            return;
+        }
+    }
+
+    //合并连续段
+    for (auto iter = this->segments.begin(); iter != this->segments.end(); ++iter) {
+        size_t oriStartAddr = iter->first;
+        Segment oriSegment = iter->second;
+        size_t oriEndAddr = oriStartAddr + oriSegment.getLength();
+
+        if (oriEndAddr == startAddr) {//旧段在新段前且连续
+            oriSegment.append(segment.getFrontPointer(), segment.getLength());
+            segments[oriStartAddr] = oriSegment;
+            if (++iter == this->segments.end()) {
+                return;
+            }
+            size_t nextStartAddr = iter->first;
+            Segment nextSegment = iter->second;
+            if (nextStartAddr == endAddr) {//下一段仍然连续
+                oriSegment.append(nextSegment.getFrontPointer(), nextSegment.getLength());
+                segments[oriStartAddr] = oriSegment;
+                this->segments.erase(iter);
+            }
+            return;
+        }else if (oriStartAddr == endAddr) {//新段在旧段前且连续
+            segment.append(oriSegment.getFrontPointer(), oriSegment.getLength());
+            this->segments.erase(iter);
+            break;
+        }
+    }
+
+    this->segments.insert(std::pair<rsize_t, Segment>(segment.getStartAddress(), segment));
 }
 
-void FileModel::parseBin(const char * path, size_t startAddress)
+void FileModel::parseBin(const char * path, size_t startAddr)
 {
     ifstream ifs(path, ios::in | ios::binary);
     Segment temp;
-    temp.setStartAddress(startAddress);
+    temp.setStartAddress(startAddr);
     char buffer[READ_EACH_TIME];
     while (!ifs.eof()) {
         ifs.read(buffer, READ_EACH_TIME);
@@ -23,11 +95,11 @@ void FileModel::generateBin(const char* path, const bool padding, unsigned char 
 {
     Segment allSegments;
     for (auto iter = this->segments.begin(); iter != this->segments.end(); ++iter) {
-        size_t startAddress = iter->first;
+        size_t startAddr = iter->first;
         Segment segment = iter->second;
         if (padding) {//需填充
             if (allSegments.getLength() == 0) {
-                allSegments.setStartAddress(startAddress);
+                allSegments.setStartAddress(startAddr);
             }else {
                 size_t paddingSize = segment.getStartAddress() - allSegments.getStartAddress() - allSegments.getLength();
                 for (int i = 0; i < paddingSize; ++i) {

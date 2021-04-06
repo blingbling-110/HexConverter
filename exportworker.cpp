@@ -35,6 +35,7 @@ void ExportWorker::realWorker(
     for (int i = 0; i < importFiles.size(); ++i) {
         QString startAddress = importFiles[i][0];
         QString importPath = importFiles[i][1];
+//        qDebug() << importPath;
         if (importPath.endsWith(".bin") || importPath.endsWith(".BIN")) {
             file->parseBin(importPath.toLocal8Bit().data(), startAddress.toUInt(&ok, 16));
         }else if (importPath.endsWith(".hex") || importPath.endsWith(".HEX")) {

@@ -70,3 +70,17 @@ void Segment::clear()
     this->data.clear();
     this->data.shrink_to_fit();
 }
+
+void Segment::replace(size_t startAddr, size_t length, unsigned char* buffer)
+{
+    this->remove(startAddr, length);
+    for (size_t i = 0; i < length; i++) {
+        this->data.insert(this->data.begin() + (startAddr - this->startAddr + i), *buffer++);
+    }
+}
+
+void Segment::remove(size_t startAddr, size_t length)
+{
+    this->data.erase(this->data.begin() + (startAddr - this->startAddr), this->data.begin() + (startAddr - this->startAddr + length));
+    this->data.shrink_to_fit();
+}

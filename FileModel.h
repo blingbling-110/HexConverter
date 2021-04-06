@@ -22,13 +22,13 @@ public:
 	/// </summary>
 	/// <param name="segment">待增加的刷新段</param>
 	/// <returns>是否增加成功</returns>
-	bool append(Segment segment);
+    void append(Segment segment);
 	/// <summary>
 	/// 解析bin文件
 	/// </summary>
 	/// <param name="path">bin文件路径</param>
-    /// <param name="startAddress">起始地址</param>
-    void parseBin(const char* path, size_t startAddress);
+    /// <param name="startAddr">起始地址</param>
+    void parseBin(const char* path, size_t startAddr);
     /// <summary>
     /// 生成bin文件
     /// </summary>

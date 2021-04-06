@@ -76,4 +76,17 @@ public:
     /// 清除段
     /// </summary>
     void clear();
+    /// <summary>
+    /// 替换段中指定数据
+    /// </summary>
+    /// <param name="startAddr">替换起始地址</param>
+    /// <param name="length">替换数据的长度</param>
+    /// <param name="buffer">待替换的缓冲</param>
+    void replace(size_t startAddr, size_t length, unsigned char* buffer);
+    /// <summary>
+    /// 删除段中指定数据
+    /// </summary>
+    /// <param name="startAddr">删除起始地址</param>
+    /// <param name="length">删除数据的长度</param>
+    void remove(size_t startAddr, size_t length);
 };
