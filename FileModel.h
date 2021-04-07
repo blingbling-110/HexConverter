@@ -5,6 +5,8 @@
 #include <fstream>
 #include <ios>
 #include <string>
+#include <iomanip>
+#include <sstream>
 
 using namespace std;
 
@@ -48,4 +50,9 @@ public:
     /// <param name="padding">是否填充</param>
     /// <param name="paddingValue">填充值</param>
     void generateHex(const char* path, const bool padding, unsigned char paddingValue);
+    /// <summary>
+    /// 进行段间填充
+    /// </summary>
+    /// <param name="paddingValue">填充值</param>
+    void padding(unsigned char paddingValue);
 };

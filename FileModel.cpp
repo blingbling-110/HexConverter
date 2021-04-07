@@ -93,40 +93,26 @@ void FileModel::parseBin(const char * path, size_t startAddr)
 
 void FileModel::generateBin(const char* path, const bool padding, unsigned char paddingValue)
 {
-    Segment allSegments;
+    if (padding) {//需填充
+        this->padding(paddingValue);
+    }
     for (auto iter = this->segments.begin(); iter != this->segments.end(); ++iter) {
         size_t startAddr = iter->first;
         Segment segment = iter->second;
-        if (padding) {//需填充
-            if (allSegments.getLength() == 0) {
-                allSegments.setStartAddress(startAddr);
-            }else {
-                size_t paddingSize = segment.getStartAddress() - allSegments.getStartAddress() - allSegments.getLength();
-                for (int i = 0; i < paddingSize; ++i) {
-                    allSegments.append(paddingValue);//填充
-                }
-            }
-            allSegments.append(segment.getFrontPointer(), segment.getLength());
-        }else {//不需填充
-            if (this->segments.size() == 1) {
-                ofstream ofs(path, ios::out | ios::binary);
-                ofs.write(reinterpret_cast<char*>(segment.getFrontPointer()), segment.getLength());
-                ofs.close();
-            }else if (this->segments.size() > 1) {
-                string folderPath = path;
-                folderPath = folderPath.substr(0, folderPath.rfind('/'));
-                char outputPath[256];
-                sprintf_s(outputPath, "%s/%zX.bin", folderPath.c_str(), segment.getStartAddress());
-                ofstream ofs(outputPath, ios::out | ios::binary);
-                ofs.write(reinterpret_cast<char*>(segment.getFrontPointer()), segment.getLength());
-                ofs.close();
-            }
+
+        if (this->segments.size() == 1) {//就一段则按原文件名输出
+            ofstream ofs(path, ios::out | ios::binary);
+            ofs.write(reinterpret_cast<char*>(segment.getFrontPointer()), segment.getLength());
+            ofs.close();
+        }else if (this->segments.size() > 1) {//多段则按每段起始地址为文件名输出
+            string folderPath = path;//字符数组转字符串
+            folderPath = folderPath.substr(0, folderPath.rfind('/'));
+            char outputPath[256];
+            sprintf_s(outputPath, "%s/%zX.bin", folderPath.c_str(), startAddr);
+            ofstream ofs(outputPath, ios::out | ios::binary);
+            ofs.write(reinterpret_cast<char*>(segment.getFrontPointer()), segment.getLength());
+            ofs.close();
         }
-    }
-    if (allSegments.getLength() != 0) {
-        ofstream ofs(path, ios::out | ios::binary);
-        ofs.write(reinterpret_cast<char*>(allSegments.getFrontPointer()), allSegments.getLength());
-        ofs.close();
     }
 }
 
@@ -183,5 +169,92 @@ void FileModel::parseHex(const char * path)
 
 void FileModel::generateHex(const char * path, const bool padding, unsigned char paddingValue)
 {
-//    for (auto iter = this->segments.begin(); iter != this->segments.end(); ++iter) {
+    ofstream ofs(path, ios::out);
+    size_t lineDataLen = 0x20;
+    if (padding) {//需填充
+        this->padding(paddingValue);
+    }
+
+    for (auto iter = this->segments.begin(); iter != this->segments.end(); ++iter) {
+        size_t startAddr = iter->first;
+        Segment segment = iter->second;
+        size_t segLen = segment.getLength();
+        auto pData = segment.getFrontPointer();
+        int lineDataWrited = 0, checksum = 0, length = 0;
+        bool insertELA = true;
+        std::stringstream strStream;
+
+        for(size_t i = 0; i < segLen; i++)
+        {
+            size_t dataAddr = startAddr + i;
+            strStream << std::setfill('0') << std::setw(8) << std::uppercase << std::hex << dataAddr;
+            string strDataAddr = strStream.str();
+            strStream.str("");
+            int data = static_cast<int>(*pData++);
+            strStream << std::setfill('0') << std::setw(2) << std::uppercase << std::hex << data;
+            string strData = strStream.str();
+            strStream.str("");
+            size_t remainLen = segLen - i;
+
+            if(insertELA) {  // 插入扩展线性地址记录
+                ofs << ":02000004" << strDataAddr.substr(0, 4);
+                checksum += 0x02 + 0x04 + ((dataAddr & 0xFF000000) >> 24) + ((dataAddr & 0xFF0000) >> 16);
+                ofs << std::setfill('0') << std::setw(2) << std::uppercase << std::hex
+                    << (-checksum & 0xFF) << '\n';
+                insertELA = false;
+                checksum = 0;
+            }
+
+            if(lineDataWrited == 0) {
+                ofs << ":";
+                if(remainLen >= lineDataLen) {
+                    length = lineDataLen;
+                }else {
+                    length = remainLen;
+                }
+                ofs << std::setfill('0') << std::setw(2) << std::uppercase << std::hex << length;
+                checksum += length;
+                ofs << strDataAddr.substr(4, 4);
+                checksum += ((dataAddr & 0xFF00) >> 8) + dataAddr & 0xFF;
+                ofs << "00";
+            }
+
+            ofs << strData;
+            checksum += data;
+            lineDataWrited++;
+            if(strDataAddr.substr(4, 4).compare("FFFF") == 0) {
+                insertELA = true;
+            }
+
+            if(lineDataWrited >= length) {
+                ofs << std::setfill('0') << std::setw(2) << std::uppercase << std::hex
+                    << (-checksum & 0xFF) << '\n';
+                lineDataWrited = 0;
+                checksum = 0;
+            }
+        }
+    }
+    ofs << ":00000001FF\n";
+    ofs.close();
+}
+
+void FileModel::padding(unsigned char paddingValue)
+{
+    Segment allSegments;
+    for (auto iter = this->segments.begin(); iter != this->segments.end(); ++iter) {
+        size_t startAddr = iter->first;
+        Segment segment = iter->second;
+
+        if (allSegments.getLength() == 0) {
+            allSegments.setStartAddress(startAddr);
+        }else {
+            size_t paddingSize = startAddr - allSegments.getStartAddress() - allSegments.getLength();
+            for (int i = 0; i < paddingSize; ++i) {
+                allSegments.append(paddingValue);//填充
+            }
+        }
+        allSegments.append(segment.getFrontPointer(), segment.getLength());
+    }
+    this->segments.clear();
+    this->append(allSegments);
 }

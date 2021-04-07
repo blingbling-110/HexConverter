@@ -51,6 +51,8 @@ void ExportWorker::realWorker(
     //导出文件
     if (exportPath.endsWith(".bin") || exportPath.endsWith(".BIN")) {
         file->generateBin(exportPath.toLocal8Bit().data(), padding, paddingValue.toUInt(&ok, 16));
+    }else if (exportPath.endsWith(".hex") || exportPath.endsWith(".HEX")) {
+        file->generateHex(exportPath.toLocal8Bit().data(), padding, paddingValue.toUInt(&ok, 16));
     }
     emit message("转换已完成！");
 
