@@ -55,4 +55,10 @@ public:
     /// </summary>
     /// <param name="paddingValue">填充值</param>
     void padding(unsigned char paddingValue);
+    /// <summary>
+    /// 对所有段进行过滤
+    /// </summary>
+    /// <param name="startAddr">过滤起始地址</param>
+    /// <param name="endAddr">过滤结束地址</param>
+    void filter(size_t startAddr, size_t endAddr);
 };

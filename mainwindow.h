@@ -90,7 +90,9 @@ signals:
             const QString &exportPath,
             const bool padding,
             const QString paddingValue,
-            const bool print);
+            const bool print,
+            const QString startAddr,
+            const QString endAddr);
 };
 
 #endif // MAINWINDOW_H

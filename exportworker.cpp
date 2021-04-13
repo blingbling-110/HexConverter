@@ -7,7 +7,7 @@ ExportWorker::ExportWorker(QObject *parent) : QObject(parent)
 
 void ExportWorker::testWorker()
 {
-    for(unsigned int i = 0; i <= 0xffffffffffffffff; i++)
+    for(unsigned int i = 0; i <= 0xffffffff; i++)
     {
         QThread::usleep(300);
         emit message(QString::number(i, 16) + " FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF");
@@ -19,7 +19,9 @@ void ExportWorker::realWorker(
         const QString &exportPath,
         const bool padding,
         const QString paddingValue,
-        const bool print)
+        const bool print,
+        const QString startAddr,
+        const QString endAddr)
 {
 //    qDebug() << exportPath;
     //取消导出
@@ -32,7 +34,7 @@ void ExportWorker::realWorker(
     bool ok;
 
     //解析文件
-    for (int i = 0; i < importFiles.size(); ++i) {
+    for (size_t i = 0; i < importFiles.size(); ++i) {
         QString startAddress = importFiles[i][0];
         QString importPath = importFiles[i][1];
 //        qDebug() << importPath;
@@ -42,6 +44,9 @@ void ExportWorker::realWorker(
             file->parseHex(importPath.toLocal8Bit().data());
         }
     }
+
+    //对所有段进行过滤
+    file->filter(startAddr.toUInt(&ok, 16), endAddr.toUInt(&ok, 16));
 
     //打印输入文件
     if (print) {
@@ -55,7 +60,7 @@ void ExportWorker::realWorker(
         file->generateHex(exportPath.toLocal8Bit().data(), padding, paddingValue.toUInt(&ok, 16));
     }
     emit message("转换已完成！");
-
+    delete(file);
     emit enable();
 }
 

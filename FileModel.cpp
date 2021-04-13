@@ -6,7 +6,7 @@ void FileModel::append(Segment segment)
     size_t endAddr = startAddr + segment.getLength();
 
     //替换掉重复的段
-    for (auto iter = this->segments.begin(); iter != this->segments.end(); ++iter) {
+    for (auto iter = segments.begin(); iter != segments.end(); ++iter) {
         size_t oriStartAddr = iter->first;
         Segment oriSegment = iter->second;
         size_t oriEndAddr = oriStartAddr + oriSegment.getLength();
@@ -17,7 +17,7 @@ void FileModel::append(Segment segment)
             segments[oriStartAddr] = oriSegment;
             return;
         }else if (oriStartAddr > startAddr && oriStartAddr < endAddr && oriEndAddr >= endAddr) {
-            //新段的下部分替换掉旧段，上部分继续新增
+            //新段的靠下部分替换掉旧段，靠上部分继续新增
             oriSegment.replace(oriStartAddr, endAddr - oriStartAddr,
                                segment.getFrontPointer() + (oriStartAddr - startAddr));
             segments[oriStartAddr] = oriSegment;
@@ -25,7 +25,7 @@ void FileModel::append(Segment segment)
             this->append(segment);
             return;
         }else if (oriEndAddr > startAddr && oriEndAddr < endAddr && oriStartAddr <= startAddr) {
-            //新段的上部分替换掉旧段，下部分继续新增
+            //新段的靠上部分替换掉旧段，靠下部分继续新增
             oriSegment.replace(startAddr, oriEndAddr - startAddr, segment.getFrontPointer());
             segments[oriStartAddr] = oriSegment;
             segment.remove(startAddr, oriEndAddr - startAddr);
@@ -48,7 +48,7 @@ void FileModel::append(Segment segment)
     }
 
     //合并连续段
-    for (auto iter = this->segments.begin(); iter != this->segments.end(); ++iter) {
+    for (auto iter = segments.begin(); iter != segments.end(); ++iter) {
         size_t oriStartAddr = iter->first;
         Segment oriSegment = iter->second;
         size_t oriEndAddr = oriStartAddr + oriSegment.getLength();
@@ -56,7 +56,7 @@ void FileModel::append(Segment segment)
         if (oriEndAddr == startAddr) {//旧段在新段前且连续
             oriSegment.append(segment.getFrontPointer(), segment.getLength());
             segments[oriStartAddr] = oriSegment;
-            if (++iter == this->segments.end()) {
+            if (++iter == segments.end()) {
                 return;
             }
             size_t nextStartAddr = iter->first;
@@ -64,17 +64,17 @@ void FileModel::append(Segment segment)
             if (nextStartAddr == endAddr) {//下一段仍然连续
                 oriSegment.append(nextSegment.getFrontPointer(), nextSegment.getLength());
                 segments[oriStartAddr] = oriSegment;
-                this->segments.erase(iter);
+                segments.erase(iter);
             }
             return;
         }else if (oriStartAddr == endAddr) {//新段在旧段前且连续
             segment.append(oriSegment.getFrontPointer(), oriSegment.getLength());
-            this->segments.erase(iter);
+            segments.erase(iter);
             break;
         }
     }
 
-    this->segments.insert(std::pair<rsize_t, Segment>(segment.getStartAddress(), segment));
+    segments.insert(std::pair<rsize_t, Segment>(segment.getStartAddress(), segment));
 }
 
 void FileModel::parseBin(const char * path, size_t startAddr)
@@ -96,15 +96,15 @@ void FileModel::generateBin(const char* path, const bool padding, unsigned char 
     if (padding) {//需填充
         this->padding(paddingValue);
     }
-    for (auto iter = this->segments.begin(); iter != this->segments.end(); ++iter) {
+    for (auto iter = segments.begin(); iter != segments.end(); ++iter) {
         size_t startAddr = iter->first;
         Segment segment = iter->second;
 
-        if (this->segments.size() == 1) {//就一段则按原文件名输出
+        if (segments.size() == 1) {//就一段则按原文件名输出
             ofstream ofs(path, ios::out | ios::binary);
             ofs.write(reinterpret_cast<char*>(segment.getFrontPointer()), segment.getLength());
             ofs.close();
-        }else if (this->segments.size() > 1) {//多段则按每段起始地址为文件名输出
+        }else if (segments.size() > 1) {//多段则按每段起始地址为文件名输出
             string folderPath = path;//字符数组转字符串
             folderPath = folderPath.substr(0, folderPath.rfind('/'));
             char outputPath[256];
@@ -120,7 +120,7 @@ void FileModel::parseHex(const char * path)
 {
     ifstream ifs(path, ios::in);
     string line, lineAddr, lineData, extLinAddr;
-    int lineDataLen, lineType, lineCheckSum, i;
+    int lineDataLen, lineType, i;
     size_t absAddr, lastAbsAddr;
     Segment temp;
     lastAbsAddr = 0;
@@ -130,7 +130,7 @@ void FileModel::parseHex(const char * path)
         lineAddr = line.substr(3, 4);
         lineType = std::strtoul(line.substr(7, 2).c_str(), NULL, 16);
         lineData = line.substr(9, lineDataLen * 2);
-        lineCheckSum = std::strtoul(line.substr(9 + lineDataLen * 2, 2).c_str(), NULL, 16);
+//        int lineCheckSum = std::strtoul(line.substr(9 + lineDataLen * 2, 2).c_str(), NULL, 16);
 //        printf("%d %s %d %s %d\n",
 //               lineDataLen, lineAddr.c_str(), lineType, lineData.c_str(), lineCheckSum);
 
@@ -170,12 +170,12 @@ void FileModel::parseHex(const char * path)
 void FileModel::generateHex(const char * path, const bool padding, unsigned char paddingValue)
 {
     ofstream ofs(path, ios::out);
-    size_t lineDataLen = 0x20;
+    int lineDataLen = 0x20;
     if (padding) {//需填充
         this->padding(paddingValue);
     }
 
-    for (auto iter = this->segments.begin(); iter != this->segments.end(); ++iter) {
+    for (auto iter = segments.begin(); iter != segments.end(); ++iter) {
         size_t startAddr = iter->first;
         Segment segment = iter->second;
         size_t segLen = segment.getLength();
@@ -207,10 +207,10 @@ void FileModel::generateHex(const char * path, const bool padding, unsigned char
 
             if(lineDataWrited == 0) {
                 ofs << ":";
-                if(remainLen >= lineDataLen) {
+                if(remainLen >= static_cast<size_t>(lineDataLen)) {
                     length = lineDataLen;
                 }else {
-                    length = remainLen;
+                    length = static_cast<int>(remainLen);
                 }
                 ofs << std::setfill('0') << std::setw(2) << std::uppercase << std::hex << length;
                 checksum += length;
@@ -241,7 +241,7 @@ void FileModel::generateHex(const char * path, const bool padding, unsigned char
 void FileModel::padding(unsigned char paddingValue)
 {
     Segment allSegments;
-    for (auto iter = this->segments.begin(); iter != this->segments.end(); ++iter) {
+    for (auto iter = segments.begin(); iter != segments.end(); ++iter) {
         size_t startAddr = iter->first;
         Segment segment = iter->second;
 
@@ -249,12 +249,39 @@ void FileModel::padding(unsigned char paddingValue)
             allSegments.setStartAddress(startAddr);
         }else {
             size_t paddingSize = startAddr - allSegments.getStartAddress() - allSegments.getLength();
-            for (int i = 0; i < paddingSize; ++i) {
+            for (size_t i = 0; i < paddingSize; ++i) {
                 allSegments.append(paddingValue);//填充
             }
         }
         allSegments.append(segment.getFrontPointer(), segment.getLength());
     }
-    this->segments.clear();
+    segments.clear();
     this->append(allSegments);
+}
+
+void FileModel::filter(size_t startAddr, size_t endAddr)
+{
+    //有效性检查
+    if (startAddr > endAddr || (startAddr == 0 && endAddr == 0)) {
+        return;
+    }
+
+    for (auto iter = segments.begin(); iter != segments.end(); ++iter) {
+        size_t sgmStartAddr = iter->first;
+        Segment segment = iter->second;
+        size_t sgmEndAddr = sgmStartAddr + segment.getLength() - 1;
+
+        if (startAddr > sgmEndAddr || endAddr < sgmStartAddr) {//段完全不在输出范围之内
+            segments.erase(iter);
+        }else if (startAddr <= sgmStartAddr && endAddr >= sgmStartAddr && endAddr < sgmEndAddr) {
+            //段的靠上部分在输出范围之内
+            segment.remove(endAddr + 1, sgmEndAddr - endAddr);
+            segments[sgmStartAddr] = segment;
+        }else if (startAddr > sgmStartAddr && startAddr <= sgmEndAddr && endAddr >= sgmEndAddr) {
+            //段的靠下部分在输出范围之内
+            segment.remove(sgmStartAddr, startAddr - sgmStartAddr);
+            segments[startAddr] = segment;
+            segments.erase(iter);
+        }
+    }
 }

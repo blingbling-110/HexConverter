@@ -187,7 +187,7 @@
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_right" stretch="1,7,1,0,0">
+     <layout class="QVBoxLayout" name="verticalLayout_right" stretch="1,7,1,0,0,0">
       <item>
        <widget class="QLabel" name="label_logo">
         <property name="maximumSize">
@@ -215,7 +215,7 @@
         <item row="0" column="0">
          <widget class="QCheckBox" name="checkBox_addCrc">
           <property name="statusTip">
-           <string>是否在文件末尾加上CRC校验值</string>
+           <string>是否在段尾加上CRC校验值</string>
           </property>
           <property name="text">
            <string>添加CRC</string>
@@ -440,6 +440,41 @@
            </size>
           </property>
          </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_range">
+        <item>
+         <widget class="QLabel" name="label_range">
+          <property name="statusTip">
+           <string/>
+          </property>
+          <property name="text">
+           <string>输出范围</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit_startAddr">
+          <property name="statusTip">
+           <string>指定输出文件的地址范围，不在范围中的数据将会被丢弃，此处指定起始地址，请填写十六进制数（不用加0x）</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_separator">
+          <property name="text">
+           <string>-</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit_endAddr">
+          <property name="statusTip">
+           <string>指定输出文件的地址范围，不在范围中的数据将会被丢弃，此处指定结束地址，请填写十六进制数（不用加0x）</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->lineEdit_poly->setValidator(new QRegExpValidator(regHex, this));
     ui->lineEdit_init->setValidator(new QRegExpValidator(regHex, this));
     ui->lineEdit_xorout->setValidator(new QRegExpValidator(regHex, this));
+    ui->lineEdit_startAddr->setValidator(new QRegExpValidator(regHex, this));
+    ui->lineEdit_endAddr->setValidator(new QRegExpValidator(regHex, this));
     QRegExp regPadding("[a-fA-F0-9]{2}");
     ui->lineEdit_padding->setValidator(new QRegExpValidator(regPadding, this));
 
@@ -134,6 +136,8 @@ void MainWindow::on_pushButton_export_clicked()
     const bool padding = ui->checkBox_padding->isChecked();
     QString paddingValue = ui->lineEdit_padding->text();
     const bool print = ui->checkBox_print->isChecked();
+    QString startAddr = ui->lineEdit_startAddr->text();
+    QString endAddr = ui->lineEdit_endAddr->text();
 
     ui->pushButton_export->setDisabled(true);
     QString exportPath = QFileDialog::getSaveFileName(
@@ -146,7 +150,9 @@ void MainWindow::on_pushButton_export_clicked()
                 exportPath,
                 padding,
                 paddingValue,
-                print);
+                print,
+                startAddr,
+                endAddr);
 }
 
 void MainWindow::on_action_support_triggered()
