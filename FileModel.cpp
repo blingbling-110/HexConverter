@@ -285,3 +285,25 @@ void FileModel::filter(size_t startAddr, size_t endAddr)
         }
     }
 }
+
+void FileModel::addCrc(
+        rsize_t width,
+        unsigned long long poly,
+        unsigned long long init,
+        bool refin,
+        bool refout,
+        unsigned long long xorout)
+{
+    for (auto iter = segments.begin(); iter != segments.end(); ++iter) {
+        size_t startAddr = iter->first;
+        Segment segment = iter->second;
+
+        segment.calculateSegmentCrc(width, poly, init, refin, refout, xorout);
+        auto crc = segment.getSegmentCrc();
+        int crcLen = ceil(width / 8.0);
+        while (crcLen > 0) {
+            segment.append((crc >> (crcLen-- - 1) * 8) & 0xFF);
+        }
+        segments[startAddr] = segment;
+    }
+}

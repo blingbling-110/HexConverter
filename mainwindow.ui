@@ -421,10 +421,10 @@
         <item>
          <widget class="QCheckBox" name="checkBox_print">
           <property name="statusTip">
-           <string>在控制台中打印出导入文件中所包含的段，包括起始地址和数据</string>
+           <string>在控制台中打印输出段，包括起始地址和数据</string>
           </property>
           <property name="text">
-           <string>打印导入文件</string>
+           <string>打印输出段</string>
           </property>
          </widget>
         </item>

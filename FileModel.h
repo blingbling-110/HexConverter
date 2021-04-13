@@ -61,4 +61,20 @@ public:
     /// <param name="startAddr">过滤起始地址</param>
     /// <param name="endAddr">过滤结束地址</param>
     void filter(size_t startAddr, size_t endAddr);
+    /// <summary>
+    /// 为各段计算并添加CRC校验值
+    /// </summary>
+    /// <param name="width">CRC位宽</param>
+    /// <param name="poly">CRC多项式</param>
+    /// <param name="init">输入初始值</param>
+    /// <param name="refin">输入是否反转</param>
+    /// <param name="refout">输出是否反转</param>
+    /// <param name="xorout">输出异或值</param>
+    void addCrc(
+            rsize_t width,
+            unsigned long long poly,
+            unsigned long long init,
+            bool refin,
+            bool refout,
+            unsigned long long xorout);
 };

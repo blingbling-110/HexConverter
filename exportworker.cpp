@@ -2,7 +2,9 @@
 
 ExportWorker::ExportWorker(QObject *parent) : QObject(parent)
 {
-    qRegisterMetaType<std::vector<std::vector<QString>>>("std::vector<std::vector<QString>>");//注册类型
+    //注册类型
+    qRegisterMetaType<std::vector<std::vector<QString>>>("std::vector<std::vector<QString>>");
+    qRegisterMetaType<CrcParams>("CrcParams");
 }
 
 void ExportWorker::testWorker()
@@ -21,7 +23,9 @@ void ExportWorker::realWorker(
         const QString paddingValue,
         const bool print,
         const QString startAddr,
-        const QString endAddr)
+        const QString endAddr,
+        const bool addCrc,
+        const CrcParams crcParams)
 {
 //    qDebug() << exportPath;
     //取消导出
@@ -37,7 +41,7 @@ void ExportWorker::realWorker(
     for (size_t i = 0; i < importFiles.size(); ++i) {
         QString startAddress = importFiles[i][0];
         QString importPath = importFiles[i][1];
-//        qDebug() << importPath;
+        emit message("解析 " + importPath);
         if (importPath.endsWith(".bin") || importPath.endsWith(".BIN")) {
             file->parseBin(importPath.toLocal8Bit().data(), startAddress.toUInt(&ok, 16));
         }else if (importPath.endsWith(".hex") || importPath.endsWith(".HEX")) {
@@ -48,7 +52,18 @@ void ExportWorker::realWorker(
     //对所有段进行过滤
     file->filter(startAddr.toUInt(&ok, 16), endAddr.toUInt(&ok, 16));
 
-    //打印输入文件
+    //计算并添加各段CRC
+    if (addCrc) {
+        emit message("计算各段CRC");
+        file->addCrc(crcParams.width.toUInt(&ok, 10),
+                     crcParams.poly.toULongLong(&ok, 16),
+                     crcParams.init.toULongLong(&ok, 16),
+                     crcParams.refin,
+                     crcParams.refout,
+                     crcParams.xorout.toULongLong(&ok, 16));
+    }
+
+    //打印输出段
     if (print) {
         this->printFile(file);
     }
@@ -59,7 +74,7 @@ void ExportWorker::realWorker(
     }else if (exportPath.endsWith(".hex") || exportPath.endsWith(".HEX")) {
         file->generateHex(exportPath.toLocal8Bit().data(), padding, paddingValue.toUInt(&ok, 16));
     }
-    emit message("转换已完成！");
+    emit message("转换已完成！\n");
     delete(file);
     emit enable();
 }

@@ -7,6 +7,16 @@
 #include "FileModel.h"
 #include <QMetaType>
 
+struct CrcParams
+{
+    QString width;
+    QString poly;
+    QString init;
+    bool refin;
+    bool refout;
+    QString xorout;
+};
+
 class ExportWorker : public QObject
 {
     Q_OBJECT
@@ -29,7 +39,9 @@ public slots:
             const QString paddingValue,
             const bool print,
             const QString startAddr,
-            const QString endAddr);
+            const QString endAddr,
+            const bool addCrc,
+            const CrcParams crcParams);
 };
 
 #endif // EXPORTWORKER_H

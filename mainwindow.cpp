@@ -57,18 +57,18 @@ std::map<std::string, unsigned int> crcArgs[] = {
     {
         {"width", 16},
         {"poly", 0x1021},
-        {"init", 0xffff},
+        {"init", 0xFFFF},
         {"refin", 0},
         {"refout", 0},
         {"xorout", 0x0000}
     },
     {
         {"width", 32},
-        {"poly", 0xedb88320},
-        {"init", 0xffffffff},
+        {"poly", 0xEDB88320},
+        {"init", 0xFFFFFFFF},
         {"refin", 0},
         {"refout", 0},
-        {"xorout", 0xffffffff}
+        {"xorout", 0xFFFFFFFF}
     }
 };
 
@@ -139,6 +139,14 @@ void MainWindow::on_pushButton_export_clicked()
     QString startAddr = ui->lineEdit_startAddr->text();
     QString endAddr = ui->lineEdit_endAddr->text();
 
+    CrcParams crcParams;
+    crcParams.width = ui->lineEdit_crcWidth->text();
+    crcParams.poly = ui->lineEdit_poly->text();
+    crcParams.init = ui->lineEdit_init->text();
+    crcParams.refin = ui->comboBox_refin->currentIndex() == 0? false: true;
+    crcParams.refout = ui->comboBox_refout->currentIndex() == 0? false: true;
+    crcParams.xorout = ui->lineEdit_xorout->text();
+
     ui->pushButton_export->setDisabled(true);
     QString exportPath = QFileDialog::getSaveFileName(
                 this,
@@ -152,7 +160,9 @@ void MainWindow::on_pushButton_export_clicked()
                 paddingValue,
                 print,
                 startAddr,
-                endAddr);
+                endAddr,
+                ui->checkBox_addCrc->isChecked(),
+                crcParams);
 }
 
 void MainWindow::on_action_support_triggered()

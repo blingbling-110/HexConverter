@@ -92,7 +92,9 @@ signals:
             const QString paddingValue,
             const bool print,
             const QString startAddr,
-            const QString endAddr);
+            const QString endAddr,
+            const bool addCrc,
+            const CrcParams crcParams);
 };
 
 #endif // MAINWINDOW_H
