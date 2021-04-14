@@ -141,7 +141,7 @@ void FileModel::parseHex(const char * path)
         case 0://数据记录
             absAddr = std::strtoul((extLinAddr + lineAddr).c_str(), NULL, 16);
             if (absAddr != lastAbsAddr) {
-//                printf("absAddr:%u lastAbsAddr:%u\n", absAddr, lastAbsAddr);
+//                printf("absAddr:%llX lastAbsAddr:%llX\n", absAddr, lastAbsAddr);
                 if (lastAbsAddr != 0) {
                     this->append(temp);
                 }
@@ -219,7 +219,7 @@ bool FileModel::generateHex(const char * path)
                 ofs << std::setfill('0') << std::setw(2) << std::uppercase << std::hex << length;
                 checksum += length;
                 ofs << strDataAddr.substr(4, 4);
-                checksum += ((dataAddr & 0xFF00) >> 8) + dataAddr & 0xFF;
+                checksum += ((dataAddr >> 8) & 0xFF) + dataAddr & 0xFF;
                 ofs << "00";
             }
 
@@ -239,6 +239,117 @@ bool FileModel::generateHex(const char * path)
         }
     }
     ofs << ":00000001FF\n";
+    ofs.close();
+
+    return true;
+}
+
+void FileModel::parseS19(const char * path)
+{
+    ifstream ifs(path, ios::in);
+    string line, lineData;
+    int lineAddrLen, lineDataLen, lineType, i;
+    size_t lineAddr, lastAbsAddr;
+    Segment temp;
+    lastAbsAddr = 0;
+    while (getline(ifs, line)) {
+//        printf((line + "\n").c_str());
+        lineType = std::strtoul(line.substr(1, 1).c_str(), NULL, 16);
+        switch (lineType) {
+        case 1://S1记录
+        case 2://S2记录
+        case 3://S3记录
+            lineAddrLen = lineType + 1;
+            break;
+        default:
+            continue;
+        }
+        lineDataLen = std::strtoul(line.substr(2, 2).c_str(), NULL, 16) - lineAddrLen - 1;
+        lineAddr = std::strtoul(line.substr(4, lineAddrLen * 2).c_str(), NULL, 16);
+        lineData = line.substr(4 + lineAddrLen * 2, lineDataLen * 2);
+//        int lineCheckSum = std::strtoul(line.substr(4 + (lineAddrLen + lineDataLen) * 2, 2).c_str(), NULL, 16);
+//        printf("%d %d %s %s %d\n",
+//               lineType, lineDataLen, lineAddr.c_str(), lineData.c_str(), lineCheckSum);
+
+        if (lineAddr != lastAbsAddr) {
+//            printf("lineAddr:%llX lastAbsAddr:%llX\n", lineAddr, lastAbsAddr);
+            if (lastAbsAddr != 0) {
+                this->append(temp);
+            }
+            temp.clear();
+            temp.setStartAddress(lineAddr);
+        }
+        i = 0;
+        while(i < lineDataLen)
+        {
+            temp.append(static_cast<unsigned char>(std::strtoul(lineData.substr(i * 2, 2).c_str(), NULL, 16)));
+            i++;
+        }
+        lastAbsAddr = lineAddr + lineDataLen;
+    }
+    if (temp.getLength() != 0) {
+        this->append(temp);
+        temp.clear();
+    }
+    ifs.close();
+}
+
+bool FileModel::generateS19(const char * path)
+{
+    if (segments.empty()) {//生成必要性检测
+        return false;
+    }
+
+    ofstream ofs(path, ios::out);
+    int lineDataLen = 20;
+    ofs << "S01E00006F75747075742E73313931304D6164652062792051696E5A696A756EFA\n";
+
+    for (auto iter = segments.begin(); iter != segments.end(); ++iter) {
+        size_t startAddr = iter->first;
+        Segment segment = iter->second;
+        size_t segLen = segment.getLength();
+        auto pData = segment.getFrontPointer();
+        int lineDataWrited = 0, checksum = 0, dataLength = 0, lineLength;
+        std::stringstream strStream;
+
+        for(size_t i = 0; i < segLen; i++)
+        {
+            size_t dataAddr = startAddr + i;
+            strStream << std::setfill('0') << std::setw(8) << std::uppercase << std::hex << dataAddr;
+            string strDataAddr = strStream.str();
+            strStream.str("");
+            int data = static_cast<int>(*pData++);
+            strStream << std::setfill('0') << std::setw(2) << std::uppercase << std::hex << data;
+            string strData = strStream.str();
+            strStream.str("");
+            size_t remainLen = segLen - i;
+
+            if(lineDataWrited == 0) {
+                ofs << "S3";
+                if(remainLen >= static_cast<size_t>(lineDataLen)) {
+                    dataLength = lineDataLen;
+                }else {
+                    dataLength = static_cast<int>(remainLen);
+                }
+                lineLength = dataLength + 4 + 1;//数据长度+地址长度+校验和占位
+                ofs << std::setfill('0') << std::setw(2) << std::uppercase << std::hex << lineLength;
+                checksum += lineLength;
+                ofs << strDataAddr;
+                checksum += ((dataAddr >> 24) & 0xFF) + ((dataAddr >> 16) & 0xFF) + ((dataAddr >> 8) & 0xFF) + dataAddr & 0xFF;
+            }
+
+            ofs << strData;
+            checksum += data;
+            lineDataWrited++;
+
+            if(lineDataWrited >= dataLength) {
+                ofs << std::setfill('0') << std::setw(2) << std::uppercase << std::hex
+                    << (0xFF - (checksum & 0xFF)) << '\n';
+                lineDataWrited = 0;
+                checksum = 0;
+            }
+        }
+    }
     ofs.close();
 
     return true;

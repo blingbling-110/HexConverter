@@ -46,6 +46,8 @@ void ExportWorker::realWorker(
             file->parseBin(importPath.toLocal8Bit().data(), startAddress.toUInt(&ok, 16));
         }else if (importPath.endsWith(".hex") || importPath.endsWith(".HEX")) {
             file->parseHex(importPath.toLocal8Bit().data());
+        }else if (importPath.endsWith(".s19") || importPath.endsWith(".S19")) {
+            file->parseS19(importPath.toLocal8Bit().data());
         }
     }
 
@@ -86,12 +88,14 @@ void ExportWorker::realWorker(
         res = file->generateBin(exportPath.toLocal8Bit().data());
     }else if (exportPath.endsWith(".hex") || exportPath.endsWith(".HEX")) {
         res = file->generateHex(exportPath.toLocal8Bit().data());
+    }else if (exportPath.endsWith(".s19") || exportPath.endsWith(".S19")) {
+        res = file->generateS19(exportPath.toLocal8Bit().data());
     }
 
     if (res) {
         emit message("转换已完成！\n");
     }else {
-        emit message("导入数据不在输出范围内，转换失败！\n");
+        emit message("输出范围内无数据，转换失败！\n");
     }
     delete(file);
     emit enable();

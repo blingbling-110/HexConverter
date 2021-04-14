@@ -49,6 +49,17 @@ public:
     /// <returns>生成成功与否</returns>
     bool generateHex(const char* path);
     /// <summary>
+    /// 解析s19文件
+    /// </summary>
+    /// <param name="path">s19文件路径</param>
+    void parseS19(const char* path);
+    /// <summary>
+    /// 生成s19文件
+    /// </summary>
+    /// <param name="path">s19文件路径</param>
+    /// <returns>生成成功与否</returns>
+    bool generateS19(const char* path);
+    /// <summary>
     /// 进行段间填充
     /// </summary>
     /// <param name="paddingValue">填充值</param>
