@@ -35,9 +35,8 @@ public:
     /// 生成bin文件
     /// </summary>
     /// <param name="path">bin文件路径</param>
-    /// <param name="padding">是否填充</param>
-    /// <param name="paddingValue">填充值</param>
-    void generateBin(const char* path, const bool padding, unsigned char paddingValue);
+    /// <returns>生成成功与否</returns>
+    bool generateBin(const char* path);
     /// <summary>
     /// 解析hex文件
     /// </summary>
@@ -47,9 +46,8 @@ public:
     /// 生成hex文件
     /// </summary>
     /// <param name="path">hex文件路径</param>
-    /// <param name="padding">是否填充</param>
-    /// <param name="paddingValue">填充值</param>
-    void generateHex(const char* path, const bool padding, unsigned char paddingValue);
+    /// <returns>生成成功与否</returns>
+    bool generateHex(const char* path);
     /// <summary>
     /// 进行段间填充
     /// </summary>
@@ -60,7 +58,9 @@ public:
     /// </summary>
     /// <param name="startAddr">过滤起始地址</param>
     /// <param name="endAddr">过滤结束地址</param>
-    void filter(size_t startAddr, size_t endAddr);
+    /// <param name="padding">是否填充</param>
+    /// <param name="paddingValue">填充值</param>
+    void filter(size_t startAddr, size_t endAddr, bool padding, unsigned char paddingValue);
     /// <summary>
     /// 为各段计算并添加CRC校验值
     /// </summary>

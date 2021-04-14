@@ -91,11 +91,12 @@ void FileModel::parseBin(const char * path, size_t startAddr)
     this->append(temp);
 }
 
-void FileModel::generateBin(const char* path, const bool padding, unsigned char paddingValue)
+bool FileModel::generateBin(const char* path)
 {
-    if (padding) {//需填充
-        this->padding(paddingValue);
+    if (segments.empty()) {//生成必要性检测
+        return false;
     }
+
     for (auto iter = segments.begin(); iter != segments.end(); ++iter) {
         size_t startAddr = iter->first;
         Segment segment = iter->second;
@@ -114,6 +115,8 @@ void FileModel::generateBin(const char* path, const bool padding, unsigned char 
             ofs.close();
         }
     }
+
+    return true;
 }
 
 void FileModel::parseHex(const char * path)
@@ -167,13 +170,14 @@ void FileModel::parseHex(const char * path)
     ifs.close();
 }
 
-void FileModel::generateHex(const char * path, const bool padding, unsigned char paddingValue)
+bool FileModel::generateHex(const char * path)
 {
+    if (segments.empty()) {//生成必要性检测
+        return false;
+    }
+
     ofstream ofs(path, ios::out);
     int lineDataLen = 0x20;
-    if (padding) {//需填充
-        this->padding(paddingValue);
-    }
 
     for (auto iter = segments.begin(); iter != segments.end(); ++iter) {
         size_t startAddr = iter->first;
@@ -236,10 +240,16 @@ void FileModel::generateHex(const char * path, const bool padding, unsigned char
     }
     ofs << ":00000001FF\n";
     ofs.close();
+
+    return true;
 }
 
 void FileModel::padding(unsigned char paddingValue)
 {
+    if (segments.size() < 2) {//填充必要性检测
+        return;
+    }
+
     Segment allSegments;
     for (auto iter = segments.begin(); iter != segments.end(); ++iter) {
         size_t startAddr = iter->first;
@@ -259,7 +269,7 @@ void FileModel::padding(unsigned char paddingValue)
     this->append(allSegments);
 }
 
-void FileModel::filter(size_t startAddr, size_t endAddr)
+void FileModel::filter(size_t startAddr, size_t endAddr, bool padding, unsigned char paddingValue)
 {
     //有效性检查
     if (startAddr > endAddr || (startAddr == 0 && endAddr == 0)) {
@@ -280,9 +290,44 @@ void FileModel::filter(size_t startAddr, size_t endAddr)
         }else if (startAddr > sgmStartAddr && startAddr <= sgmEndAddr && endAddr >= sgmEndAddr) {
             //段的靠下部分在输出范围之内
             segment.remove(sgmStartAddr, startAddr - sgmStartAddr);
+            segment.setStartAddress(startAddr);
+            segments[startAddr] = segment;
+            segments.erase(iter);
+        }else if (startAddr > sgmStartAddr && endAddr < sgmEndAddr) {
+            //段的中间部分在输出范围之内
+            segment.remove(endAddr + 1, sgmEndAddr - endAddr);
+            segment.remove(sgmStartAddr, startAddr - sgmStartAddr);
+            segment.setStartAddress(startAddr);
             segments[startAddr] = segment;
             segments.erase(iter);
         }
+    }
+
+    if (!padding || segments.empty()) {//检查是否填充以及段是否为空
+        return;
+    }
+    this->padding(paddingValue);//填充
+    size_t sgmStartAddr = segments.begin()->first;
+    Segment segment = segments.begin()->second;
+    size_t sgmEndAddr = sgmStartAddr + segment.getLength() - 1;
+    if (sgmStartAddr > startAddr) {
+        //补全段头
+        Segment paddedSegment;
+        paddedSegment.setStartAddress(startAddr);
+        for (size_t i = 0; i < sgmStartAddr - startAddr; i++) {
+            paddedSegment.append(paddingValue);
+        }
+        paddedSegment.append(segment.getFrontPointer(), segment.getLength());
+        segments.clear();
+        segments[startAddr] = paddedSegment;
+    }
+    if (sgmEndAddr < endAddr) {
+        //补全段尾
+        segment = segments[startAddr];
+        for (size_t i = 0; i < endAddr - sgmEndAddr; i++) {
+            segment.append(paddingValue);
+        }
+        segments[startAddr] = segment;
     }
 }
 

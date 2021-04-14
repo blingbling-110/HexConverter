@@ -35,7 +35,7 @@ void ExportWorker::realWorker(
     }
 
     FileModel *file = new FileModel;
-    bool ok;
+    bool ok, res = false;
 
     //解析文件
     for (size_t i = 0; i < importFiles.size(); ++i) {
@@ -49,11 +49,24 @@ void ExportWorker::realWorker(
         }
     }
 
+    //将不连续的段填充为连续
+    if (padding) {
+        file->padding(paddingValue.toUInt(&ok, 16));
+    }
+
     //对所有段进行过滤
-    file->filter(startAddr.toUInt(&ok, 16), endAddr.toUInt(&ok, 16));
+    file->filter(startAddr.toUInt(&ok, 16), endAddr.toUInt(&ok, 16), padding, paddingValue.toUInt(&ok, 16));
 
     //计算并添加各段CRC
     if (addCrc) {
+        if (crcParams.width == ""
+                || crcParams.poly == ""
+                || crcParams.init == ""
+                || crcParams.xorout == "") {
+            emit message("CRC参数不完整！\n");
+            emit enable();
+            return;
+        }
         emit message("计算各段CRC");
         file->addCrc(crcParams.width.toUInt(&ok, 10),
                      crcParams.poly.toULongLong(&ok, 16),
@@ -70,11 +83,16 @@ void ExportWorker::realWorker(
 
     //导出文件
     if (exportPath.endsWith(".bin") || exportPath.endsWith(".BIN")) {
-        file->generateBin(exportPath.toLocal8Bit().data(), padding, paddingValue.toUInt(&ok, 16));
+        res = file->generateBin(exportPath.toLocal8Bit().data());
     }else if (exportPath.endsWith(".hex") || exportPath.endsWith(".HEX")) {
-        file->generateHex(exportPath.toLocal8Bit().data(), padding, paddingValue.toUInt(&ok, 16));
+        res = file->generateHex(exportPath.toLocal8Bit().data());
     }
-    emit message("转换已完成！\n");
+
+    if (res) {
+        emit message("转换已完成！\n");
+    }else {
+        emit message("导入数据不在输出范围内，转换失败！\n");
+    }
     delete(file);
     emit enable();
 }
