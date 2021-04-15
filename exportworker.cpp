@@ -49,7 +49,7 @@ void ExportWorker::realWorker(
             return;
         }
 
-        emit message("解析 " + importPath);
+        emit message("正在解析 " + importPath);
         if (importPath.endsWith(".bin") || importPath.endsWith(".BIN")) {
             file->parseBin(importPath.toLocal8Bit().data(), startAddress.toUInt(&ok, 16));
         }else if (importPath.endsWith(".hex") || importPath.endsWith(".HEX")) {
@@ -57,10 +57,16 @@ void ExportWorker::realWorker(
         }else if (importPath.endsWith(".s19") || importPath.endsWith(".S19")) {
             file->parseS19(importPath.toLocal8Bit().data());
         }
+        emit message("解析完毕");
     }
 
     //将不连续的段填充为连续
     if (padding) {
+        if (paddingValue == "") {
+            emit message("将不连续的段填充为连续的段，填充值：0x00");
+        }else {
+            emit message("将不连续的段填充为连续的段，填充值：0x" + paddingValue);
+        }
         file->padding(paddingValue.toUInt(&ok, 16));
     }
 
@@ -77,7 +83,7 @@ void ExportWorker::realWorker(
             emit enable();
             return;
         }
-        emit message("计算各段CRC");
+        emit message("正在计算各段CRC");
         file->addCrc(crcParams.width.toUInt(&ok, 10),
                      crcParams.poly.toULongLong(&ok, 16),
                      crcParams.init.toULongLong(&ok, 16),
@@ -88,10 +94,13 @@ void ExportWorker::realWorker(
 
     //打印输出段
     if (print) {
+        emit message("打印各输出段的起始地址和数据：");
         this->printFile(file);
+        emit message("打印完毕");
     }
 
     //导出文件
+    emit message("正在导出文件");
     if (exportPath.endsWith(".bin") || exportPath.endsWith(".BIN")) {
         res = file->generateBin(exportPath.toLocal8Bit().data());
     }else if (exportPath.endsWith(".hex") || exportPath.endsWith(".HEX")) {

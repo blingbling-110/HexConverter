@@ -1,0 +1,34 @@
+{
+    "CRC-16/CCITT-FALSE": {
+        "init": "ffff",
+        "poly": "1021",
+        "refin": "0",
+        "refout": "0",
+        "width": "16",
+        "xorout": "0"
+    },
+    "CRC-32/BZIP2": {
+        "init": "ffffffff",
+        "poly": "04c11db7",
+        "refin": "0",
+        "refout": "0",
+        "width": "32",
+        "xorout": "ffffffff"
+    },
+    "CRC-32/ISO-HDLC": {
+        "init": "ffffffff",
+        "poly": "04c11db7",
+        "refin": "1",
+        "refout": "1",
+        "width": "32",
+        "xorout": "ffffffff"
+    },
+    "CRC-32/SV51": {
+        "init": "ffffffff",
+        "poly": "edb88320",
+        "refin": "1",
+        "refout": "1",
+        "width": "32",
+        "xorout": "ffffffff"
+    }
+}
