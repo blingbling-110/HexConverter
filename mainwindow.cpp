@@ -177,6 +177,7 @@ void MainWindow::check_crc_setting(bool addCrcIsChecked)
         select_crc_setting(ui->comboBox_crcType->currentIndex());
     }else {
         ui->comboBox_crcType->setDisabled(true);
+        ui->lineEdit_crcName->setDisabled(true);
         ui->lineEdit_crcWidth->setDisabled(true);
         ui->lineEdit_poly->setDisabled(true);
         ui->lineEdit_init->setDisabled(true);
