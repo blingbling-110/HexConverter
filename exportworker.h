@@ -6,6 +6,7 @@
 #include <QDebug>
 #include "FileModel.h"
 #include <QMetaType>
+#include <QFileInfo>
 
 struct CrcParams
 {

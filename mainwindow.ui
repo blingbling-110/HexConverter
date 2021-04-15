@@ -187,7 +187,7 @@
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_right" stretch="1,7,1,0,0,0">
+     <layout class="QVBoxLayout" name="verticalLayout_right" stretch="1,7,0,0,0,0">
       <item>
        <widget class="QLabel" name="label_logo">
         <property name="maximumSize">
@@ -211,92 +211,29 @@
        </widget>
       </item>
       <item>
-       <layout class="QGridLayout" name="gridLayout_crc">
-        <item row="0" column="0">
-         <widget class="QCheckBox" name="checkBox_addCrc">
-          <property name="statusTip">
-           <string>是否在段尾加上CRC校验值</string>
-          </property>
-          <property name="text">
-           <string>添加CRC</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QComboBox" name="comboBox_crcType">
-          <property name="statusTip">
-           <string>选择CRC算法类型</string>
-          </property>
-          <item>
-           <property name="text">
-            <string>自定义</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>CRC-16/CCITT-FALSE</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>CRC32 0xEDB88320</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="1" column="0">
+       <layout class="QGridLayout" name="gridLayout_crc" rowstretch="0,0,0,0,0,0,0,0" rowminimumheight="0,0,0,0,0,0,0,0">
+        <item row="2" column="0">
          <widget class="QLabel" name="label_crcWidth">
           <property name="text">
            <string>位宽</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="lineEdit_crcWidth">
-          <property name="statusTip">
-           <string>CRC校验值的位宽，请填写十进制数</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_poly">
-          <property name="text">
-           <string>多项式(0x)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLineEdit" name="lineEdit_poly">
-          <property name="statusTip">
-           <string>CRC算法多项式，请填写十六进制数（不用加0x）</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_init">
-          <property name="text">
-           <string>初始值(0x)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QLineEdit" name="lineEdit_init">
-          <property name="statusTip">
-           <string>CRC算法初始值，请填写十六进制数（不用加0x）</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
+        <item row="5" column="0">
          <widget class="QLabel" name="label_refin">
           <property name="text">
            <string>输入逆向</string>
           </property>
          </widget>
         </item>
-        <item row="4" column="1">
+        <item row="6" column="0">
+         <widget class="QLabel" name="label_refout">
+          <property name="text">
+           <string>输出逆向</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
          <widget class="QComboBox" name="comboBox_refin">
           <property name="statusTip">
            <string>CRC算法输入逆向标志</string>
@@ -313,14 +250,24 @@
           </item>
          </widget>
         </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="label_refout">
+        <item row="7" column="0">
+         <widget class="QLabel" name="label_xorout">
           <property name="text">
-           <string>输出逆向</string>
+           <string>输出异或值(0x)</string>
           </property>
          </widget>
         </item>
-        <item row="5" column="1">
+        <item row="7" column="1">
+         <widget class="QLineEdit" name="lineEdit_xorout">
+          <property name="statusTip">
+           <string>CRC算法输出异或值，请填写十六进制数（不用加0x）</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
          <widget class="QComboBox" name="comboBox_refout">
           <property name="statusTip">
            <string>CRC算法输出逆向标志</string>
@@ -337,20 +284,175 @@
           </item>
          </widget>
         </item>
-        <item row="6" column="0">
-         <widget class="QLabel" name="label_xorout">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="checkBox_addCrc">
+          <property name="statusTip">
+           <string>是否在段尾加上CRC校验值</string>
+          </property>
           <property name="text">
-           <string>输出异或值(0x)</string>
+           <string>添加CRC</string>
           </property>
          </widget>
         </item>
-        <item row="6" column="1">
-         <widget class="QLineEdit" name="lineEdit_xorout">
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="lineEdit_poly">
           <property name="statusTip">
-           <string>CRC算法输出异或值，请填写十六进制数（不用加0x）</string>
+           <string>CRC算法多项式，请填写十六进制数（不用加0x）</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="comboBox_crcType">
+          <property name="statusTip">
+           <string>选择CRC算法类型</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>自定义CRC算法</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="lineEdit_init">
+          <property name="statusTip">
+           <string>CRC算法初始值，请填写十六进制数（不用加0x）</string>
           </property>
           <property name="text">
            <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="lineEdit_crcWidth">
+          <property name="statusTip">
+           <string>CRC校验值的位宽，请填写十进制数</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_init">
+          <property name="text">
+           <string>初始值(0x)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_poly">
+          <property name="text">
+           <string>多项式(0x)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_crcName">
+          <property name="text">
+           <string>算法名称</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="lineEdit_crcName">
+          <property name="statusTip">
+           <string>请填写CRC算法的名称</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_print">
+        <item>
+         <spacer name="horizontalSpacer_printLeft">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_print">
+          <property name="statusTip">
+           <string>在控制台中打印输出段，包括起始地址和数据</string>
+          </property>
+          <property name="text">
+           <string>打印输出段</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_printRight">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_addCrc">
+          <property name="statusTip">
+           <string>将当前CRC算法存为预设以便今后使用</string>
+          </property>
+          <property name="text">
+           <string>存为预设</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_addCrcRight">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_range">
+        <item>
+         <widget class="QLabel" name="label_range">
+          <property name="statusTip">
+           <string/>
+          </property>
+          <property name="text">
+           <string>输出范围</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit_startAddr">
+          <property name="statusTip">
+           <string>指定输出文件的地址范围，不在范围中的数据将会被丢弃，此处指定起始地址，请填写十六进制数（不用加0x）</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_separator">
+          <property name="text">
+           <string>-</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit_endAddr">
+          <property name="statusTip">
+           <string>指定输出文件的地址范围，不在范围中的数据将会被丢弃，此处指定结束地址，请填写十六进制数（不用加0x）</string>
           </property>
          </widget>
         </item>
@@ -398,81 +500,6 @@
           </property>
           <property name="statusTip">
            <string>用于填充不连续段的值，请填写十六进制数（不用加0x），默认填充00</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_print">
-        <item>
-         <spacer name="horizontalSpacer_printLeft">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkBox_print">
-          <property name="statusTip">
-           <string>在控制台中打印输出段，包括起始地址和数据</string>
-          </property>
-          <property name="text">
-           <string>打印输出段</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_printRight">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_range">
-        <item>
-         <widget class="QLabel" name="label_range">
-          <property name="statusTip">
-           <string/>
-          </property>
-          <property name="text">
-           <string>输出范围</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="lineEdit_startAddr">
-          <property name="statusTip">
-           <string>指定输出文件的地址范围，不在范围中的数据将会被丢弃，此处指定起始地址，请填写十六进制数（不用加0x）</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_separator">
-          <property name="text">
-           <string>-</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="lineEdit_endAddr">
-          <property name="statusTip">
-           <string>指定输出文件的地址范围，不在范围中的数据将会被丢弃，此处指定结束地址，请填写十六进制数（不用加0x）</string>
           </property>
          </widget>
         </item>

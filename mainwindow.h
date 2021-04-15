@@ -16,9 +16,12 @@
 #include "validatedelegate.h"
 #include <QDragEnterEvent>
 #include <QMimeData>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 #define CONSOLE_MAX_LINE 2020
 #define CONSOLE_FLASH_TIME 10
+#define CRC_INIT_FILE "crc.json"
 
 namespace Ui {
 class MainWindow;
@@ -67,6 +70,10 @@ private slots:
     void dragEnterEvent(QDragEnterEvent *event);
 
     void dropEvent(QDropEvent *event);
+
+    void initCrc();
+
+    void on_pushButton_addCrc_clicked();
 
 private:
     Ui::MainWindow *ui;

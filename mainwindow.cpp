@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+std::vector<std::map<QString, QString>> crcArgs;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -8,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     //初始化
+    initCrc();
     check_crc_setting(ui->checkBox_addCrc->isChecked());
     check_padding_setting(ui->checkBox_padding->isChecked());
     ui->textEdit_console->document()->setMaximumBlockCount(CONSOLE_MAX_LINE);//设置最大显示行数
@@ -52,25 +55,6 @@ MainWindow::~MainWindow()
     exportThread.quit();
     exportThread.wait();
 }
-
-std::map<std::string, unsigned int> crcArgs[] = {
-    {
-        {"width", 16},
-        {"poly", 0x1021},
-        {"init", 0xFFFF},
-        {"refin", 0},
-        {"refout", 0},
-        {"xorout", 0x0000}
-    },
-    {
-        {"width", 32},
-        {"poly", 0xEDB88320},
-        {"init", 0xFFFFFFFF},
-        {"refin", 0},
-        {"refout", 0},
-        {"xorout", 0xFFFFFFFF}
-    }
-};
 
 void MainWindow::on_pushButton_import_clicked()
 {
@@ -167,12 +151,12 @@ void MainWindow::on_pushButton_export_clicked()
 
 void MainWindow::on_action_support_triggered()
 {
-    QDesktopServices::openUrl(QUrl("mailto:qinzijun@dias.com.cn&subject=HexConverter使用问题"));
+    QDesktopServices::openUrl(QUrl("mailto:523497359@qq.com&subject=HexConverter使用问题"));
 }
 
 void MainWindow::on_action_document_triggered()
 {
-    QDesktopServices::openUrl(QUrl::fromLocalFile("./readme.md"));
+    QDesktopServices::openUrl(QUrl::fromLocalFile("./README.md"));
 }
 
 void MainWindow::on_action_about_triggered()
@@ -205,6 +189,7 @@ void MainWindow::check_crc_setting(bool addCrcIsChecked)
 void MainWindow::select_crc_setting(int currentIndex)
 {
     if (currentIndex == 0) {
+        ui->lineEdit_crcName->setEnabled(true);
         ui->lineEdit_crcWidth->setEnabled(true);
         ui->lineEdit_poly->setEnabled(true);
         ui->lineEdit_init->setEnabled(true);
@@ -212,12 +197,14 @@ void MainWindow::select_crc_setting(int currentIndex)
         ui->comboBox_refout->setEnabled(true);
         ui->lineEdit_xorout->setEnabled(true);
     }else {
-        ui->lineEdit_crcWidth->setText(QString::number(crcArgs[currentIndex - 1]["width"]));
-        ui->lineEdit_poly->setText(QString::number(crcArgs[currentIndex - 1]["poly"], 16));
-        ui->lineEdit_init->setText(QString::number(crcArgs[currentIndex - 1]["init"], 16));
-        ui->comboBox_refin->setCurrentIndex(crcArgs[currentIndex - 1]["refin"]);
-        ui->comboBox_refout->setCurrentIndex(crcArgs[currentIndex - 1]["refout"]);
-        ui->lineEdit_xorout->setText(QString::number(crcArgs[currentIndex - 1]["xorout"], 16));
+        ui->lineEdit_crcName->setText(crcArgs[currentIndex - 1]["name"]);
+        ui->lineEdit_crcWidth->setText(crcArgs[currentIndex - 1]["width"]);
+        ui->lineEdit_poly->setText(crcArgs[currentIndex - 1]["poly"]);
+        ui->lineEdit_init->setText(crcArgs[currentIndex - 1]["init"]);
+        ui->comboBox_refin->setCurrentIndex(crcArgs[currentIndex - 1]["refin"].toInt());
+        ui->comboBox_refout->setCurrentIndex(crcArgs[currentIndex - 1]["refout"].toInt());
+        ui->lineEdit_xorout->setText(crcArgs[currentIndex - 1]["xorout"]);
+        ui->lineEdit_crcName->setDisabled(true);
         ui->lineEdit_crcWidth->setDisabled(true);
         ui->lineEdit_poly->setDisabled(true);
         ui->lineEdit_init->setDisabled(true);
@@ -320,4 +307,116 @@ void MainWindow::dropEvent(QDropEvent *event)
         QTableWidgetItem *cellItem = new QTableWidgetItem(importPath);
         ui->tableWidget_import->setItem(rowNums, 1, cellItem);
     }
+}
+
+void MainWindow::initCrc()
+{
+    if (!QFileInfo::exists(CRC_INIT_FILE)) {
+        QMessageBox::warning(this, "警告", QString("CRC配置文件%1不存在！").arg(CRC_INIT_FILE));
+        return;
+    }
+    QFile file(CRC_INIT_FILE);
+    if (!file.open(QIODevice::ReadOnly)) {
+        QMessageBox::warning(this, "警告", QString("读取CRC配置文件%1失败").arg(CRC_INIT_FILE));
+        return;
+    }
+    QJsonParseError *error = new QJsonParseError;
+    QJsonDocument jdc = QJsonDocument::fromJson(file.readAll(), error);
+    if (error->error != QJsonParseError::NoError) {
+        QMessageBox::warning(this, "警告", QString("解析CRC配置文件%1失败：%2").arg(CRC_INIT_FILE, error->errorString()));
+        return;
+    }
+
+    QJsonObject obj = jdc.object();//获取json对象
+    QStringList list = obj.keys();
+    bool abort = false;
+    foreach (QString key, list) {
+        std::map<QString, QString> map;
+        map["name"] = key;
+        QJsonObject subObj = obj[key].toObject();
+        if (!(subObj.contains("width")
+              && subObj.contains("poly")
+              && subObj.contains("init")
+              && subObj.contains("refin")
+              && subObj.contains("refout")
+              && subObj.contains("xorout"))) {
+            abort = true;
+            break;
+        }
+        map["width"] = subObj["width"].toString();
+        map["poly"] = subObj["poly"].toString();
+        map["init"] = subObj["init"].toString();
+        map["refin"] = subObj["refin"].toString();
+        map["refout"] = subObj["refout"].toString();
+        map["xorout"] = subObj["xorout"].toString();
+        crcArgs.push_back(map);
+        ui->comboBox_crcType->addItem(key);
+    }
+    if (abort) {
+        crcArgs.clear();
+        ui->comboBox_crcType->blockSignals(true);//屏蔽currentIndexChanged信号
+        ui->comboBox_crcType->clear();
+        ui->comboBox_crcType->addItem("自定义CRC算法");
+        ui->comboBox_crcType->blockSignals(false);
+        QMessageBox::critical(this, "错误", QString("CRC配置文件%1格式有误").arg(CRC_INIT_FILE));
+    }
+//    QMessageBox::information(this, "通知", QString("CRC配置文件%1加载成功").arg(CRC_INIT_FILE));
+    file.close();
+}
+
+void MainWindow::on_pushButton_addCrc_clicked()
+{
+    QString name = ui->lineEdit_crcName->text();
+    QString width = ui->lineEdit_crcWidth->text();
+    QString poly = ui->lineEdit_poly->text();
+    QString init = ui->lineEdit_init->text();
+    QString refin = QString::number(ui->comboBox_refin->currentIndex());
+    QString refout = QString::number(ui->comboBox_refout->currentIndex());
+    QString xorout = ui->lineEdit_xorout->text();
+    if (name == ""
+            || width == ""
+            || poly == ""
+            || init == ""
+            || xorout == "") {
+        QMessageBox::critical(this, "错误", "CRC参数不完整！");
+        return;
+    }
+    foreach (auto el, crcArgs) {
+        if (el["name"] == name) {
+            QMessageBox::warning(this, "警告", "CRC算法已存在！");
+            return;
+        }
+    }
+
+    std::map<QString, QString> map;
+    map["name"] = name;
+    map["width"] = width;
+    map["poly"] = poly;
+    map["init"] = init;
+    map["refin"] = refin;
+    map["refout"] = refout;
+    map["xorout"] = xorout;
+    crcArgs.push_back(map);
+    ui->comboBox_crcType->addItem(name);
+    ui->comboBox_crcType->setCurrentIndex(static_cast<int>(crcArgs.size()));
+
+    QFile file(CRC_INIT_FILE);
+    if (!file.open(QIODevice::WriteOnly)) {
+        QMessageBox::critical(this, "错误", QString("读取CRC配置文件%1失败").arg(CRC_INIT_FILE));
+        return;
+    }
+    QJsonDocument jdoc;
+    QJsonObject obj, subObj;
+    foreach (auto el, crcArgs) {
+        subObj["width"] = el["width"];
+        subObj["poly"] = el["poly"];
+        subObj["init"] = el["init"];
+        subObj["refin"] = el["refin"];
+        subObj["refout"] = el["refout"];
+        subObj["xorout"] = el["xorout"];
+        obj[el["name"]] = subObj;
+    }
+    jdoc.setObject(obj);
+    file.write(jdoc.toJson(QJsonDocument::Indented));//自动添加回车符
+    file.close();
 }

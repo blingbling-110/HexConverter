@@ -17,7 +17,7 @@
    <item row="0" column="0">
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;用于hex、s19、bin文件间相互转换的小工具。&lt;/p&gt;&lt;p&gt;可以选择是否填充并自定义填充值；可以在转换时选择是否在文件末尾加上CRC校验值。&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; color:#ff0000;&quot;&gt;版本号：1.0&lt;/span&gt;&lt;/p&gt;&lt;p&gt;开发者：CPC/覃子俊&lt;/p&gt;&lt;p&gt;日期：2021年4月7日&lt;/p&gt;&lt;p&gt;联系方式：qinzijun@dias.com.cn&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;用于Hex、S19、Bin文件间相互转换的小工具。&lt;/p&gt;&lt;p&gt;可以选择是否填充并自定义填充值；可以在转换时选择是否在文件末尾加上CRC校验值。&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; color:#ff0000;&quot;&gt;版本号：1.0&lt;/span&gt;&lt;/p&gt;&lt;p&gt;开发者：覃子俊&lt;/p&gt;&lt;p&gt;日期：2021年4月15日&lt;/p&gt;&lt;p&gt;联系方式：523497359@qq.com&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="textFormat">
       <enum>Qt::AutoText</enum>

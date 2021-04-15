@@ -41,6 +41,14 @@ void ExportWorker::realWorker(
     for (size_t i = 0; i < importFiles.size(); ++i) {
         QString startAddress = importFiles[i][0];
         QString importPath = importFiles[i][1];
+        //判断文件是否存在
+        if (!QFileInfo::exists(importPath)) {
+            delete(file);
+            emit message("文件不存在：" + importPath);
+            emit enable();
+            return;
+        }
+
         emit message("解析 " + importPath);
         if (importPath.endsWith(".bin") || importPath.endsWith(".BIN")) {
             file->parseBin(importPath.toLocal8Bit().data(), startAddress.toUInt(&ok, 16));
